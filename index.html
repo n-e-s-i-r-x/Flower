@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="graphite" data-anim="full" data-scene="on" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Configuration-driven website for a Minecraft Bedrock performance resource pack.">
+<meta name="theme-color" content="#050507">
+<title>Flow for Minecraft Bedrock</title>
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAACp0lEQVR42q2Wv2rrMBTGTyMPegDTyXgpBC/pKjAeS8bSDlnKhUx9Au0esmvMlCmj52yeBUGjty5dDCKlBPoKd/jg9CDnhgxXQ6JE0k/nfOePfZfn98vlsu97+h8DqLs8v79lK89vuT6TN8iJJFprk2PX0dlFCp8EsaoqXrXWhhCu35HhN5vZNI1cBvHj42NqTrJTcn81BdEYAwrMMcaEEPA55RpjMHHOSe4s2SSJRIRJQjTGABdCwFIieqopiKDzT2kUg6YW8FCn0xdmDw8PSqkY40Wic+54PCqljDExRiKKMWqtq6rSWnddR0Sfn58X3PfeExETnXPeexARGdiLP6UsTdNYazltZjIZ+dh+vw8hJEp579l3OUII3vuqqpib4QupkxzAPuccXwYR4dB0VFW12+3e39/VYvG42+3yPCcirbVz7ufnB8Jtt9u6ruu67roOgg7D0HUd578x5nw+xxjHcXx+fgb6cDjMrlcxZ4y11nvvvYdPbCx8t9bKAsmmdYLDCRf/gLjf7yVRlhbQarF4nM/ncP98PhdFoZQqy3K1WimlvPdlWRLRarWq6zqEMAwDEY3jOI5jWZZYLYoCx51zfd+r0+nr+/sb3DzPoRERPT09aa3BHccRKSwzD9EriiLGGGMsigJEIlIvL69930uu1jrGOAwDKDAHocMFMmc5+Y/HI1dmJnto0uWmEWP5ZNWhNOS4e3v7M21ostI5aE3TrNfrpEuwFETUtm0afSxwNNlkWZEcd6msNAJ+Z0lzROvk0pIdum1b+bCSuKSRZ1I1ViqEAKW4eNg1Kat0SJb4L7Rt281mM23p/KRBb+e4y34WQuBb00BdfEZKl3nPZrNhrb338uByuUyjP+Um0OvPZ2xOof86z+7f8sIxu/HdpO/721+N/gKL5fr0Oeys+wAAAABJRU5ErkJggg==">
+<!--
+  ============================================================================
+  MONOCRAFT FONT (SIL OFL 1.1, (c) Idrees Hassan, https://github.com/IdreesInc/Monocraft)
+  Loaded from the jsDelivr GitHub CDN. If the network request fails the stack
+  below degrades to a readable monospace face; the interface never breaks.
+  ============================================================================
+-->
+<style>
+@font-face{
+  font-family:"Monocraft";
+  src:url("https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft-ttf/Monocraft.ttf") format("truetype");
+  font-weight:400; font-style:normal; font-display:swap;
+}
+
+/* ==========================================================================
+   1. DESIGN TOKENS. Palette extracted from the supplied references:
+   a cool near-black void, a 16-step grey ramp and a bone-white frame colour.
+   ========================================================================== */
+:root{
+  /* pixel grid */
+  --u:4px;                 /* base pixel unit            */
+  --notch:8px;             /* stepped-corner notch size  */
+  --bw:3px;                /* border weight              */
+
+  /* monochrome ramp (cool tint in the darks, as measured) */
+  --void:#050507;
+  --ink-1:#0a0a0d;
+  --ink-2:#101014;
+  --ink-3:#17171c;
+  --ink-4:#202027;
+  --ink-5:#2a2a32;
+  --line:#3a3a44;
+  --line-hi:#55555f;
+  --grey:#8b8b95;
+  --grey-2:#b6b6bf;
+  --bone:#e4e4ea;
+  --white:#f6f6fa;
+
+  /* semantic roles */
+  --bg:var(--void);
+  --panel:var(--ink-2);
+  --panel-2:var(--ink-3);
+  --face:var(--ink-5);
+  --face-hi:#34343d;
+  --edge:#000;
+  --edge-in:#4a4a55;
+  --text:#c7c7d0;
+  --text-dim:#8f8f99;
+  --text-hi:#f1f1f6;
+  --accent:var(--bone);
+  --accent-ink:#0b0b0e;
+  --focus:#f6f6fa;
+  --scrim:rgba(3,3,5,.72);
+
+  /* motion */
+  --dur-1:110ms; --dur-2:190ms; --dur-3:300ms; --dur-4:460ms;
+  --ease:cubic-bezier(.25,.7,.25,1);
+  --ease-out:cubic-bezier(.16,.84,.3,1);
+  --ease-in:cubic-bezier(.5,.05,.75,.4);
+
+  /* type */
+  --font:"Monocraft",ui-monospace,"Cascadia Mono","Segoe UI Mono",Menlo,Consolas,monospace;
+  --fs-body:15.5px; --lh:1.65;
+}
+
+/* ==========================================================================
+   2. BASE
+   ========================================================================== */
+*,*::before,*::after{box-sizing:border-box;scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{width:0;height:0;display:none;background:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scrollbar-width:none;-ms-overflow-style:none;overflow-x:clip}
+html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font:400 var(--fs-body)/var(--lh) var(--font);
+  letter-spacing:.01em;
+  min-height:100dvh;
+  overflow-x:hidden;
+  position:relative;
+  -webkit-font-smoothing:none;           /* keep glyph edges crisp, pixel vibe */
+  font-smooth:never;
+}
+h1,h2,h3,h4{color:var(--text-hi);line-height:1.25;margin:0 0 .6em;letter-spacing:.02em;font-weight:400}
+h1{font-size:clamp(1.6rem,5.4vw,2.6rem)}
+h2{font-size:clamp(1.25rem,3.6vw,1.7rem)}
+h3{font-size:clamp(1.02rem,2.6vw,1.18rem)}
+p{margin:0 0 1em}
+a{color:var(--grey-2)}
+a:hover{color:var(--white)}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+*{-webkit-tap-highlight-color:transparent}   /* no blue flash on press, anywhere */
+::selection{background:var(--accent);color:var(--accent-ink)}
+:focus{outline:none}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+[tabindex="-1"]:focus{outline:none}   /* scripted heading focus is for screen readers, not visual */
+.sr-only{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip-link{position:fixed;top:-100px;left:8px;z-index:200;background:var(--bone);color:#0b0b0e;padding:10px 14px;text-decoration:none;transition:top var(--dur-2) var(--ease)}
+.skip-link:focus{top:8px}
+.px-img{image-rendering:pixelated;image-rendering:crisp-edges}
+/* icon sizing: context rules first, then a catch-all for span wrappers */
+svg{display:inline-block;vertical-align:-2px;flex:none;width:16px;height:16px}
+.release-meta svg{width:12px;height:12px;vertical-align:-2px;margin-right:4px}
+.card-ico svg,.t-ico svg,.dlg-ico svg,.empty svg{width:100%;height:100%}
+.card-ico,.t-ico,.dlg-ico{display:block}   /* spans must be blockified for their fixed box to apply */
+.mono-dim{color:var(--text-dim)}
+code,kbd{font-family:var(--font);background:var(--ink-1);border:2px solid var(--line);padding:1px 6px;font-size:.9em;color:var(--grey-2)}
+
+/* ==========================================================================
+   3. PIXEL GEOMETRY UTILITIES
+   Stepped corners + double outline, rebuilt from the reference logo frame.
+   ========================================================================== */
+.px{
+  --n:var(--notch);
+  clip-path:polygon(
+    0 var(--n), calc(var(--n)/2) var(--n), calc(var(--n)/2) calc(var(--n)/2), var(--n) calc(var(--n)/2), var(--n) 0,
+    calc(100% - var(--n)) 0, calc(100% - var(--n)) calc(var(--n)/2), calc(100% - calc(var(--n)/2)) calc(var(--n)/2), calc(100% - calc(var(--n)/2)) var(--n), 100% var(--n),
+    100% calc(100% - var(--n)), calc(100% - calc(var(--n)/2)) calc(100% - var(--n)), calc(100% - calc(var(--n)/2)) calc(100% - calc(var(--n)/2)), calc(100% - var(--n)) calc(100% - calc(var(--n)/2)), calc(100% - var(--n)) 100%,
+    var(--n) 100%, var(--n) calc(100% - calc(var(--n)/2)), calc(var(--n)/2) calc(100% - calc(var(--n)/2)), calc(var(--n)/2) calc(100% - var(--n)), 0 calc(100% - var(--n)));
+}
+.panel{
+  background:var(--panel);
+  border:var(--bw) solid var(--edge);
+  box-shadow:inset 0 0 0 2px var(--panel-2), inset 0 0 0 4px var(--line);
+  padding:calc(var(--u)*5);
+}
+/* ordered-dither fill, the reference's signature shading technique */
+.dither{
+  background-image:conic-gradient(var(--dith-c,rgba(255,255,255,.05)) 25%,transparent 0 50%,var(--dith-c,rgba(255,255,255,.05)) 0 75%,transparent 0);
+  background-size:var(--u) var(--u);
+}
+.dither-strong{--dith-c:rgba(255,255,255,.09)}
+.rule{height:4px;background:var(--line);border:0;margin:calc(var(--u)*4) 0;
+  background-image:conic-gradient(var(--line) 25%,transparent 0 50%,var(--line) 0 75%,transparent 0);background-size:8px 8px;background-color:transparent}
+
+/* ==========================================================================
+   4. BACKGROUND SCENE  (reference artwork, 256x144, 16 colours)
+   The scene lives in document flow as two masked bands (top + mirrored
+   footer band). Nothing is position:fixed, so the artwork can never shift,
+   jump or drift while scrolling, on any browser or embedded preview.
+   ========================================================================== */
+#bg{position:absolute;inset:0;z-index:-1;background:var(--bg);overflow:hidden}
+#bg .grain{position:absolute;inset:0;opacity:.5;
+  background-image:conic-gradient(rgba(255,255,255,.022) 25%,transparent 0 50%,rgba(255,255,255,.022) 0 75%,transparent 0);
+  background-size:var(--u) var(--u)}
+.scene-band{
+  position:absolute;left:0;right:0;top:0;height:min(92vh,860px);pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,#000 58%,transparent 99%);
+  mask-image:linear-gradient(to bottom,#000 58%,transparent 99%);
+}
+.scene-band .scene{
+  position:absolute;inset:0;
+  background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAACQBAMAAAAVTaiiAAAAKlBMVEXg4OLAwMKgoKKAgIJwcHJgYGJQUFJAQEIwMDIgICIYGBoQEBIICAoEBAYvK8fcAAAZmklEQVR42r2ce3Bc133fP797l7IokXvPuQvKtkwC9y5IpY5NYRdL2nVsSQApJX34QYqi207+qBU/8mec1PWkzUwbt2k807SOZjKdtn6qnbptrAfpTDN1LD5AyzOOLTwWlDtjScTuBWiPH8TuOXdBWzSJe0//2AUJgAAJiEjOP1zufZzv+f1+5/f4/s5CJhQAznJjSPc7zOovwFlEdS/omx+894tjVjEYxwtD1kXPbzsCuJfqh5uiys9cGpPAope9NbBQ6L1a9LL3Lw3NTaN7n171RQ/F/DMWHTWbg2qBtp2cKOysKaRSR8Mzr02jHHqgY26sSlm81e/Xis0P6f6TjdUVfqUcJkg+NcHiZLIkuGw8EsFKnLrrS449rVYDuLPhLeIFM7aaK2LJQaQFgJXGhaGTuXboxmx4Q+aBxFsJwE2Mgw2jzr5SHdcIwYtMTwSH7RiikMA60zOaAUzTdXRh6wBkn6eQHej3hXecwoUdbaI0qnY1fuo3plTSQAzS6BqfZzVKT1e2RgIOoPA/7//c0fxdO/PKGcdkGvRpO7B3RgF68PF/mcyNgLPkoGUYIpdoT9hSG1j43KffPBiZAsCwe/NHKsHES1MA9spvtsmv79f2rgPKQ1waUclWATD2DU3de+oHjB7jHx1xdfArQ1P+J2LvCQB++EdAfenudz089uFcpArw8koApivMN6QB4C3/5sZ/ZSecrqrurIPjYVguxyAR8NL53ZeO2xgHrLQBd2Mxm5jdWLvctfUscrYeh27XoXkAdfWEcVobDSFAy5VOKcTBShswdtlq1hrGmNU6csYue2Q7V/+g+6lRipIyE20fwCt9TAm5RWsTlRXti+dMABqS5QDcRiW9hvZ7N/yrzz09/wcA2fmKils41zoDXD3zHCoRrTWmo3Gms7MWgoDyvNVu/o2gWLp0Lnr1tLvwJwCDlAZdFM8NNOp4p55tWpvPikOlKVVdJi0fUM6GqMgzy96g1XW3vlLIa6x2LUf0tZ/nyjojKKkEzaRWq3EgsCiMVjgCiy6rhY+rXY90oIqnwij3Vuy8tWKRxZmltWu0Xi2PG4JrZJP4scSzlaADjYbnSZXRNu5RJeLSSAu6ogfPDh48EtGUsIrEibcqoq9jfb2QZzBrhkEA/MfVopkfHFYTNaV6ytLSt3NaSsqhQmNViOkMTP7KR8JI7bVhIHkqG/SEZklDt7AKd19FNN7BcjArve+ngNHEfzV1TnAmbOPI9hbbhTgsloYDxIQesM577U0I1jAEra/fN/+laa/iq2JwYI+xgE6yZ62zBdwJI2LiwcGixX/QBpqp417jUCPNd31SeWvmPQDWdTe9uj6xs9xKYRPzKi+M4ur1xIHsjb+8OD9lQWUfkwhQqnRYAQ/M11vTHyzsNJ1D70t+x+NWm0/dWLKzvU/r7sPHokT17R1NCiMGkN1/8tPPFB4a04yQe//ODSaPay8SBRMyXGlve5LhfQf/39PW07fPtJbALKWqKw3xumW42U/e9cH+sQELvoJ225+/9D/2oJzl2FP/1w3cpaJERmFRfQFzlW1yRD7CV29phOq2qJanzNv+tzt8bq5439ufpgmLn4syn28sAGw//MdTT/7Xv1rIB/vGNEzmL7u7GN/rEvnsLfIBtUo5ZmnBam1IedO8/T15ORwYvFQHCiOJZjT/5tPgJvLmrr/LUQ6ZI/cdKahhUlc/QaM14/7b760PYClRvzGNKESD3CQDDZAnoBeiGv5+gJ/VNR+a8nIrAjSMdT885qtwdOxh3yDY+WZeZ57stn5gRcHS1ff6ifvPD2Esew1gNYUwzuVnDUA7k1sXh4fz6ECtVi0vDhBgDIycuTUAs8zgNlIvSGCAUDlLKAeOJFp3Dpk5LCC4KfSUaTynOweGVVLBgNptCxuLfOr27vrMz29ITUMp8poWUaI6IBJN+JlnHBimKrG+auNpbOhn2ls3uLOxKzektcpB2BhCpdoLClCN7oIEIHaw2K1k6p5322233u5bHYztSh+5eHEwiqQsFatwEqS1IbToshJ96azJdZZ2XUe44bT8dibgVn50Xz7M8CE5HHuPZOCSMkS7p8df/frAI6ezMS7zfQOSE61hA+Z6fWw3LgA8LQqyhd6zlxb6mzFh7FkyaA8qvOn3PPfW9oXjz2y7Nhc2XeJS7Z731W0koDecpmWdANhx2gJE7sThZgOUF/cDzBYTu+NLfM+MXfvTrwx9OUgi1cTRJlzTE6rNTd+TVkQd+ObzFqNZvDxkHAxDCchDQ3D12omszk/hzxfeOWaP5L2p1gCgN20CFpiGjHu+rb43Nv9FsLU2GNvsqSeydK7wFeww4OUnjmiVWXCC8+7U+Hrj8xXKzL7pa5Yd/+FNkFYsKNWfGCyQWxu96ZOgJoHctk8mOHBQuX1xKrfP2B3wiToSut+3+Fmp+kk8hTwqZ/3Xkp4Qssfsv+4GtCrl8FejuwFSxQZyQrVuMrhcA4sOG1Vy/vFnzv+zVx1l5PAPfj/m0YGou5X6/vNvMagk8pjVrZf+EmgCwi9uD0DU7eo1AB+TNV9ZUPPPH7xQegpc/tyfLjz7L84F9WLXL30mZ8YSggll79EGWAve6x/ckCO6UX6u64AyvHbzckvPHs2nRy0g18j2ywWZ6c7gfkqEJnG1iolM0lVp3yMfshv0hLetG8+mgTHpcZWfvVBQHuAWSkNnVH6ueAryBP9jkipU4JQX68g6+whGrvyh2ShDIkvitmuHqczi0jh6TDykisyCqIpnbTsdNt+KnKW1XxBEk6Q6lB3ajeAk/2u3EQCyfDOuI4q6jEAcBwcOaxWBKClVHORe5EedCKT/K0qhSMoWYlpfd4At517kbSDiqlvtwi40f6/eWw5THj00eBiHhWAq8bSyuHJeByQckVgrJIg8VMcKUDxpN0ZSyTLfvA6USsXaY5KKMbWw+834bPxzXYqseLkF0qPGGyxFGuVC5EAgIIuTOpgtbNblrWMdeV2l5Kbra5xwoV6Lzv/sYDZstLLgtu1LynFS9GzFK+eM5t7rxFMSuM6d03Rd4DPGTgTl64bSOvNAf+PIPmexjAC0O5+KKm1fxcPHS44EoGqDjnZbxBPmdYebToIuM+vRuvxQAqNVjct7mH70YVSz/M9fLLZr7ow4WDh8LOoUtwjAvESGdiuNlkqY4W4MGHbeXBeA2z/1LR00X1qcvvD9ynzehhf21lU73hoAl85VrLK56bKCl2AwAiwNbLS7e0sCHwvjkTFeePeld3/aX8BhaXvenQOwwK7jsxYH2dJe9iNA/eK7T+ukZ+b9ZPZIgrOcfuTfs7jDibN/VFoWjp1dxUs4swkU1zo6tlE3xEEGUKo+duz5r7nZrHvHHLR+9Hsvy2dZnC4+XSgAfaeoFgur/ZDFqiU+QG00SriTo+cPGOXvr1vVYz9l/9/3dv/oo//lqhsCoAjeQPqEO7nrqG5PY++L24tjtcz3VrtYdVu3uwaIZxeSYXSYl2jYnm8Y/Caoa39+bqS/m9KklmbTtfSl/Wc5VnwqYsaaD/cnI95qj7LM7cqGnVHtUF9MzRs4V9E9fsw1DcXpsmqPaQtNRQCxMqkxU9YVolcAbPuAur4LRNQbTQeB8p7cNNN2X1S6Dl8OKin3qVLFKYVF0oQ8IcVZTHIsewqFMxy/EYzUpouxFdHQzDSMSXJRvVfJ/NzxXaWgrKwQATiFKB0AA2mxEH8XBSKlv1i7OjaiRG9mLzoLDWVzC8xPg8mb4eP3XbNZyUF1WuFUUBdnAhDtbKc89RSiFfZiYW1a0hnZVHBqd0AbjIMLE+IkP903kIwsXn7tzQPGuxdQWHJEZ6Ad7thz9UgL7t41w/HmuyaLibHGApYLp/2RgDwZasyZy8G+R+xsE2VEgJRUWignBAvVrr/KtffGyIBVN58RZ43F2dya0sfz2KV9ihxnG6mq5ihQAqnkDpQo0d32pVA/WlhPAJsRQ5b0zQ80wZLy64DkehTIPIndrK5dA5woIpWnQG6dDT7SsgDn3+WtyxHbjdDovZapPBQ6yiiaygIGXxnwc5qyJ8tUE5em0Gz4uQVvQHQRyG3J7bp1ZbQxKWSn67soW79SxSuGDnD0JzgWfaLW4MsvWtDFAXCR6UDiOm6m1H20devacCM70YFfvO+9YzV1wC0czg8qDSRVwNoCiRdK5X0KKM3W7cBcPgDkk1Gzja/AzaotyYje9aGTu3YsDGHmRoJuOJRuvZYMoE7nha94WrL+ipuOapOK/LJqRpYMaHlqtQqcQTbJTAD0Pfzy442U1i7pNmi7TjSLvNbcUGhtbvKLc3Vdm0kOA5nqLHj4Pd/r3bSpnNYapzaTJcvRqdakSfYw0YybQNQlbn2KWpWeVZ6SUnFPhaxcnMFDGKrs3KZSL2/HUFi1AfQSkE3JYLGpVKqmUpVIDKQL2iuCc9NOZbVEyOtD9QeZtZ69X6CTWuvX22XABoVV6zdLhYjZBAL3fGiNKJOq1sxhIPC7UUF7eUei6dxiZvstA9LVTdG4wFoUIWsboTNmw/7QAlyyzQDQziqTAKq7f/W0Te2ci5woycuK2bbJyBHyTrdBKYFbaYR6s8bXKwrGAIg8ZUPX6IYEUUAxwLVnEwQns3UCZSwuglR3uomTyE38wCYLNAfkU3hxSkm5qpOyMzeaG2IhSMFJF1CqwzqKQFwbQHsYt2Y41m4z8cjZ4cvXCpUgVT+sdmQ0gW6bFgQCFgIc4qyyqXLFRHDausAntyVtbrYB6YpGq41HI/+QP5QOuWY7zvoiN1vGovEiQPUTulyBcR1nCQKxeOTnRS10ZZ2mNxenqiutTeRjrjWRPNpuGDPHjJN208KgyhMg8TLj94PCG0gqpIZInPVyZwYSuq3EwLs5AKjNGsOkzU43EoPBNW3UcNgmfgTZ/qSDXQANA1EdPVi0Xo5DFkwFwCXN1rqxQDYsg2xWn2nYEUvuY/M0aNDsWmfh22bYFYsayL8VVGi3dQL4Fbd7tg4gQwOFwp1xtAKc2XdPi10Dgkvff5bkEN+p/LC5twi8z87YzkVoxt6D0xl0GJmCLJHL/SXqg8ad1GzBSapfz76EqLOqNA9idFMQyOvAy7aoAlv7LmTnHz5LnAyMAb4UO3YBrJYPFBa3IBwvfqmPOE+ARdA0o15biEweSuKLTOMpb+gE2MiOZEgedXbqiIqz7lv1/7MFAM7I7m2qH/Sw+wvQ+czTLyv8CrihhTgpDiZeYPPTA4AOJgCv6eZSm1m0jFaO3LkKXphViQuTUBfDKKllLw83wHbDcd3ubJazkfl+K3pW4TnPgckldwM+IG4s24KzZIO1mhruTyvhVHsY6dvZiTzirjOJH0QzVyfB6w+giABWnI2mlKdwsseYO5dAmQul6MzBeL6VphG2elGBCYyDepYSZRnOWd+FhhQDZZM8bGY1ArTftjWn6aQUhMpOmVlVdrkfJOTOiYJ2oEJJsGByAKcDUJgQyolLrGvj7FYcaByEGhgBDzGqJUVld4HDV9Y5G1xCCD2DtD2wapvEtC9iBXBbeJ7wOscT5T2uzrOpaSqJQVQo4EQSCEfbttm80W/cEp50eYJgwIKngCBHywGLdSRFQIop+nBrstEGPGVAtlACvRzCLHvnnKe1nRzIwdTnwLqmDsszTWOsRaBtSdUWHmrtBYfAqAwxuxHpD2zibA7OFh4yLpLcFiYdLg3AibKglscCZ/UdTa16eeU3BnItLTTEdVf07KIFl5VKi6kThQOTqhvTeVsi96WPi5ylQY5AudS32NoZeLZABEKrvxoPSw9j96lBBQuFzdWiN3E5K0eBUed1jymIVAzeTKFYuZbgfwowbrx3f7srLak4e1NOuBl+diWZ28sh7e6T1EHJO/8JixM665zXyn/y1KlTp7LJXstLylU3AgJeeXX73m0CwU2pc6ZwlB2eYF2C/8ltTwzWBoa+vu13pzDG1J1d6nMa+wviGKB68y7YEEN88/xX07KBc0fNd7trSgb+wf3IeJhefFSaGExX/67764QS/TT70PHqjMhu3viX0vcQXhvQbueJEoKiLY99tUJNrEx0D2MacGJVDFbpPlQntyCrs2K1aderFPAaKHC5i+QUihFo5pTsPV+yutjqCUtjBQVBo3RI7+yhL86uQVIZa4y56dDcevyRBWgDUnV1eGGsrBZGewcBcxG0KUfLVqfFYDBNcLZdz6fb6xGVxtxGHxb42nVTqONX6uXk5HhThzw6Js4L6sBw7DplXS7HEJYjAzCQhDEIOJzFu2XPyN3u2gsnu5+Tcl2mGuNW2WZajvU7k70PelWDelEZ19TttDQch7F2xmJ0ILVqqjUJ2kAUeW+QIbcA1TrQxDV2ZYvjk40JXTkYiJPnZL9WF7Mm52naoEGjIVrnM/VQQccfNKCGT1pE4fNGWbKucH67P4OG9fbMZBM2S0nOZd4jaWplInGtqIkLVCMm1flks50YFLpUYUA7vPZJAZi1/h3Fgs7+Fjxcd83T1MUOAuPtE87BVNpmYbgoAWKV6tLvqUYPHhaRwKoIz1cOl9zmEMvtvMIMgHUzCUA5d4BL81a0aL9eXNg5+X4ZG+9Y6fogq/AGY6WkbGwIkKxJ07lNeYVqApx97QxAOKiqjjNn8oQ6ZMmrLw5/2zWcJXfKKWcjvEMa8gblSnO2mFc9jbrTcOwPnOTzlrad9TyVTU2eNPt7QovhZ1+4tNhKJHrld/09/zFVVh/WgaUzPJMmcfF7vupFX/93Vu6C7du3b99+pcfU3E454+4nEyD367fcffeVa28ulq/kXF0pttZPTn3gvX8cvPWK9t9ursjdd7vwR/rHVxeu7vvur/5ytBOtLQF9u/m7XZKsUb/BaOQzu8JxCmEDCtuW3bbwa/bp/XXEHzV85w9h1g2G5T1PiYr1Gjaw/IzKbea/5l46r4DRUCuyBM+8VnfOUIX88ZICGHMW5n9y/MjlT+la1cCJH+dPqatnLc7vxrAWq6OhW+GS1mdL3blf20bzYb/DbBA08SNpYaQEGFuLg9q1s4TtxdTBfOlrbu/eQLPom8pfu1eCKzj7g0glhCYJWIegUBYFZv3cQKKC1KRUFhanq03EtWy5LYArKdfhghtUpVdHUs+Jc6btNRX4P7j7H97rPSh/dhza6JdKcUtcvVJYv1VhbhENVARliCFbsEqCRLo/otOICmVaY4xpRSf3pgpjXEMU/MZ3vv8BZZ946vzHWRwrkD4wcIrQrpaAbC4ZAPxqs+ztSLQES7bjRfKOrxiYt4IyWJQJgbZv5RKFOjB+8Vi/hKiZcmcVgDdUGMTQ6kV6IBxOd9RfaYCWtAZtsSoVJZEkg3I5QxBeqh88/NMynmH4TH1rKqNSbJ32nZiyfTRvvJqgwe7da0DNidgqhHuTB+/5qgfv8E+N+8eT70VairajWrfwhFpvXCIHHtWihx/VtdDlEwmiw1hpLTFadKoRlb424lx2uc5v/tOXPNWamqMyw+UzVbfKE64c29e9cveV1d/cr9U9lHmrs6/L9h0D5pdvpam3uyu/jK5Eogd/5dqeH+w615673Eiu3s2Pt7Nv27j3yp6rr79BFch6h81N9vJj+mzlBRsZYggRIgkffrEIu89NuPs+r/wqYJ5wL1h9SZ16w8Foveb6+Nn2hbySSWSRXhnAto89sLhPms9/PbCvUum3QOHaM5a2+zZvnCldchUrxtQFyj4e55Hw8edG9Ak5GCsW5xdovfvJz55QMSG+cqm6egKgz90UDTc5tm/fvswaxu+yC8fuf4v65tveXN9/yCy8+rahe358l3zj/mn+3r/9O3/1v9zr3jX1pl/ebdne66I8YLfdMUOyTBcH+mpHewWum0F2s3hisp0svm+sOux+9nSbqhSdFLTV2pDttCAV3n9nEuimECu3RF5PX32ven2yU44mr3jR2+6/56168blXLl0b1mb7/dztfvni1HB6z72UDa1fvGcrHJHoZZVqPhvNzX/Be+RsIQ8sylPCpy3YsOqkTGCt2tHkXAWDAtm2VRzRjRgi+dzua2ZfM+yX8zVUmv22hGqKUhzkVmNw9nv79p98BPCjDsJWkVR6aUPkNnm4qRn0AtGKxVMBSrs4jYwz5W50tQ/ETiBu7vConNgymq7Xasqa1lGGUAmKa1883YyLRsplZZ3XE1R84fkQGHRK9lTmto6m6znH0G97NQa7edOzdd1tiStXzCPC3FlcJUkOArPFTrEffwt/+i0AfhjXStQU4J55drocK6GNReIQGUY0eMO6AjSUnyuirfzt+SrvnJ86U1YSQ+AweB5e0SqJVSesGouimifC6FYCWJFOufZEaVRwF5EYNIjWzbBaigTEJZSxSGFrf32/QgRmZjo6KhFO+X5Zgdx3uFKq7X1nHdBtmO6flb1sMYBlf6yDmYVdkJdoj0AM8sAHT506dfpCHWam3Oxj7IxLh0a2GsANJWT1YRjZ9lv+8AhvQr3rEx9/6AsWdF8FqnlSgqOXu9SRzGwpgrX6/le/+iS8dhbw99cB8jO7/tNV+e8f3ZKGBbdP6+96Ei7UlXzgWz99Gu4CT1euse2j/E0AWCeNHU/Z9sSL9yYKrh71Vc395V08/zcDYE1Sw4npO7TDRiVdgb5iWXePkmVjQMEsB+66rQTp9l7UOjSys90HugrXmLX+LM0KxQxbvukIfTVcJ3V+sC29cW2cv/lhtDtdrEPcPDBe+Xl/KetMH6EZu9kICvxtAMinOg/WoaNsydeDUEoh7v5FjL8NAFnSb2p1wBu6XGIIoHL94v8HfqzPM5nVVL0AAAAASUVORK5CYII=") right top/cover no-repeat;
+  image-rendering:pixelated;opacity:.55;
+  -webkit-mask-image:linear-gradient(100deg,transparent 6%,#000 55%);
+  mask-image:linear-gradient(100deg,transparent 6%,#000 55%);
+}
+.scene-band--end{
+  top:auto;bottom:0;height:min(56vh,520px);transform:scaleY(-1);
+  -webkit-mask-image:linear-gradient(to bottom,#000 34%,transparent 96%);
+  mask-image:linear-gradient(to bottom,#000 34%,transparent 96%);
+}
+.scene-band--end .scene{opacity:.34;background-position:right center}
+html[data-scene="off"] .scene-band{display:none}
+
+/* ==========================================================================
+   5. BOOT / FIRST-RUN ENTRANCE
+   ========================================================================== */
+#boot{
+  position:fixed;inset:0;z-index:120;background:var(--void);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*5);
+  transition:opacity var(--dur-4) var(--ease),visibility 0s linear var(--dur-4);
+}
+#boot.done{opacity:0;visibility:hidden;pointer-events:none}
+#boot .emblem{width:72px;height:72px;image-rendering:pixelated;animation:bootPop 520ms var(--ease-out) both}
+#boot .boot-title{color:var(--bone);font-size:1rem;letter-spacing:.28em;text-transform:uppercase;animation:fadeUp 420ms var(--ease-out) 120ms both}
+#boot .boot-bar{width:min(280px,70vw);height:12px;border:3px solid var(--edge);background:var(--ink-2);box-shadow:inset 0 0 0 2px var(--line);padding:2px}
+#boot .boot-bar i{display:block;height:100%;width:0;background:var(--bone);
+  background-image:conic-gradient(rgba(0,0,0,.25) 25%,transparent 0 50%,rgba(0,0,0,.25) 0 75%,transparent 0);background-size:6px 6px;
+  animation:bootFill 820ms steps(12,end) 160ms forwards}
+#boot .boot-hint{color:var(--text-dim);font-size:.78rem;letter-spacing:.12em;animation:fadeUp 420ms var(--ease-out) 260ms both}
+@keyframes bootFill{to{width:100%}}
+@keyframes bootPop{from{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}to{transform:scale(1);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ==========================================================================
+   6. HEADER + NAVIGATION
+   ========================================================================== */
+#topbar{
+  position:sticky;top:0;z-index:60;
+  background:var(--ink-1);
+  border-bottom:var(--bw) solid var(--edge);
+  box-shadow:0 3px 0 var(--line), 0 10px 24px rgba(0,0,0,.45);
+  transform:translateY(-102%);
+  transition:transform var(--dur-4) var(--ease-out);
+}
+body.ready #topbar{transform:none}
+#topbar .bar{
+  max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:calc(var(--u)*5);
+  padding:calc(var(--u)*3.5) calc(var(--u)*4);
+  padding-top:calc(var(--u)*3.5 + env(safe-area-inset-top,0px));
+}
+.brand{display:flex;align-items:center;gap:calc(var(--u)*3);text-decoration:none;color:var(--text-hi);min-width:0}
+.brand img{width:34px;height:34px;image-rendering:pixelated;flex:none;transition:transform var(--dur-2) var(--ease)}
+.brand:hover img{transform:scale(1.08) rotate(-3deg)}
+.brand .b-name{font-size:.98rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand .b-sub{display:block;font-size:.66rem;letter-spacing:.22em;color:var(--text-dim)}
+#nav-desktop{margin-left:auto;display:none;align-items:center;gap:calc(var(--u)*2.5);
+  padding-left:calc(var(--u)*5);border-left:2px solid var(--line)}
+#nav-desktop .nav-btn{border-color:var(--edge);background:var(--ink-2);
+  box-shadow:inset 2px 2px 0 var(--ink-5),inset -2px -2px 0 var(--edge)}
+#nav-desktop .nav-btn[aria-current="page"]{background:var(--bone);color:var(--accent-ink);
+  box-shadow:inset 2px 2px 0 var(--white),inset -2px -2px 0 var(--grey)}
+.nav-btn{
+  appearance:none;border:var(--bw) solid transparent;background:transparent;color:var(--text-dim);
+  padding:calc(var(--u)*2) calc(var(--u)*3);cursor:pointer;text-decoration:none;
+  font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:calc(var(--u)*2);
+  transition:color var(--dur-1) var(--ease),background var(--dur-1) var(--ease),transform var(--dur-1) var(--ease);
+}
+.nav-btn svg{width:14px;height:14px;flex:none}
+.nav-btn:hover{color:var(--text-hi);background:var(--ink-4);transform:translateY(-1px)}
+.nav-btn:active{transform:translateY(1px)}
+.nav-btn[aria-current="page"]{color:var(--accent-ink);background:var(--bone);border-color:var(--edge);box-shadow:inset 2px 2px 0 var(--white),inset -2px -2px 0 var(--grey)}
+#menu-toggle{margin-left:auto}
+#nav-mobile{
+  position:fixed;left:0;right:0;top:0;z-index:59;
+  background:var(--ink-1);border-bottom:var(--bw) solid var(--edge);box-shadow:0 4px 0 var(--line);
+  padding:calc(var(--u)*24 + env(safe-area-inset-top,0px)) calc(var(--u)*4) calc(var(--u)*5 + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:calc(var(--u)*2.5);
+  transform:translateY(-104%);visibility:hidden;
+  transition:transform var(--dur-3) var(--ease-in),visibility 0s linear var(--dur-3);
+  max-height:100dvh;overflow-y:auto;
+}
+#nav-mobile.open{transform:none;visibility:visible;transition:transform var(--dur-3) var(--ease-out)}
+#nav-mobile .nav-btn{justify-content:flex-start;font-size:.95rem;padding:calc(var(--u)*3.5) calc(var(--u)*4);background:var(--ink-3);border-color:var(--edge);box-shadow:inset 2px 2px 0 var(--ink-5),inset -2px -2px 0 var(--edge)}
+#nav-mobile .nav-btn[aria-current="page"]{background:var(--bone);color:var(--accent-ink)}
+@media (min-width:900px){
+  #nav-desktop{display:flex}
+  #menu-toggle,#nav-mobile{display:none}
+}
+
+/* ==========================================================================
+   7. CONTROLS
+   ========================================================================== */
+.btn{
+  --btn-face:var(--face); --btn-hi:var(--edge-in); --btn-lo:var(--edge);
+  appearance:none;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:calc(var(--u)*2);
+  background:var(--btn-face);color:var(--text-hi);
+  border:var(--bw) solid var(--edge);
+  box-shadow:inset 2px 2px 0 var(--btn-hi),inset -2px -2px 0 var(--btn-lo);
+  padding:calc(var(--u)*3) calc(var(--u)*4);
+  font-size:.86rem;letter-spacing:.08em;text-transform:uppercase;
+  transition:transform var(--dur-1) var(--ease),background var(--dur-1) var(--ease),box-shadow var(--dur-1) var(--ease),color var(--dur-1) var(--ease);
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.btn svg{width:15px;height:15px;flex:none}
+.btn:hover{background:var(--face-hi);transform:translateY(-1px)}
+.btn:active{transform:translateY(2px);box-shadow:inset 2px 2px 0 var(--btn-lo),inset -2px -2px 0 var(--btn-hi)}
+.btn--primary{--btn-face:var(--bone);--btn-hi:var(--white);--btn-lo:var(--grey);color:var(--accent-ink)}
+.btn--primary:hover{background:var(--white)}
+.btn--ghost{--btn-face:transparent;--btn-hi:var(--line);--btn-lo:var(--edge);color:var(--text)}
+.btn--ghost:hover{--btn-face:var(--ink-4)}
+.btn--danger{--btn-face:#2a1416;--btn-hi:#5d2b30;--btn-lo:#000;color:#f4d7d9}
+.btn--sm{padding:calc(var(--u)*2) calc(var(--u)*3);font-size:.76rem}
+.btn--block{width:100%}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed;transform:none!important}
+.btn.is-loading{pointer-events:none;color:transparent!important;position:relative}
+.btn.is-loading::after{
+  content:"";position:absolute;inset:0;margin:auto;width:14px;height:14px;color:var(--accent-ink);
+  background:currentColor;clip-path:polygon(0 0,33% 0,33% 33%,66% 33%,66% 0,100% 0,100% 66%,66% 66%,66% 100%,33% 100%,33% 66%,0 66%);
+  animation:spinSteps 640ms steps(4,end) infinite;
+}
+.btn.is-ok{--btn-face:#1d2a1f;--btn-hi:#3f6b46;--btn-lo:#000;color:#d9f2dc}
+.btn.is-err{--btn-face:#2a1416;--btn-hi:#5d2b30;--btn-lo:#000;color:#f4d7d9}
+@keyframes spinSteps{to{transform:rotate(360deg)}}
+.icon-btn{
+  appearance:none;cursor:pointer;background:var(--ink-4);color:var(--text-hi);
+  border:var(--bw) solid var(--edge);box-shadow:inset 2px 2px 0 var(--edge-in),inset -2px -2px 0 var(--edge);
+  width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;
+  transition:transform var(--dur-1) var(--ease),background var(--dur-1) var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn:hover{background:var(--face-hi)}
+.icon-btn:active{transform:translateY(2px)}
+.icon-btn[aria-expanded="true"]{background:var(--bone);color:var(--accent-ink)}
+
+/* chips / filters / tabs */
+.chip-row{display:flex;flex-wrap:wrap;gap:calc(var(--u)*2)}
+.chip{
+  appearance:none;cursor:pointer;background:var(--ink-3);color:var(--text-dim);
+  border:var(--bw) solid var(--edge);box-shadow:inset 2px 2px 0 var(--ink-5),inset -2px -2px 0 var(--edge);
+  padding:calc(var(--u)*2) calc(var(--u)*3);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:calc(var(--u)*1.5);
+  transition:background var(--dur-1) var(--ease),color var(--dur-1) var(--ease),transform var(--dur-1) var(--ease);
+}
+.chip svg{width:12px;height:12px}
+.chip:hover{color:var(--text-hi);transform:translateY(-1px)}
+.chip[aria-pressed="true"],.chip[aria-selected="true"]{background:var(--bone);color:var(--accent-ink);box-shadow:inset 2px 2px 0 var(--white),inset -2px -2px 0 var(--grey)}
+.tabs{display:flex;flex-wrap:wrap;gap:calc(var(--u)*1);border-bottom:var(--bw) solid var(--line);overflow-x:auto;scrollbar-width:none;padding-bottom:0}
+@media (max-width:699px){.tabs{flex-wrap:nowrap}}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  appearance:none;cursor:pointer;background:transparent;border:var(--bw) solid transparent;border-bottom:0;
+  color:var(--text-dim);padding:calc(var(--u)*2.5) calc(var(--u)*3.5);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;
+  white-space:nowrap;position:relative;top:var(--bw);
+  transition:color var(--dur-1) var(--ease),background var(--dur-1) var(--ease);
+}
+.tab:hover{color:var(--text-hi);background:var(--ink-3)}
+.tab[aria-selected="true"]{background:var(--panel);border-color:var(--line);color:var(--text-hi);box-shadow:inset 0 4px 0 var(--bone)}
+.tabpanel{animation:fadeUp var(--dur-3) var(--ease-out)}
+.tabpanel[hidden]{display:none}
+
+/* form controls */
+.field{display:flex;flex-direction:column;gap:calc(var(--u)*1.5)}
+.field > label,.field-label{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+/* custom floating choice control (never the browser's native dropdown) */
+.choice{position:relative;display:inline-block;width:min(280px,100%);max-width:100%;min-width:0}
+.choice-btn{appearance:none;width:100%;display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*3);
+  background:var(--ink-3);color:var(--text-hi);border:var(--bw) solid var(--edge);cursor:pointer;text-align:left;
+  box-shadow:inset 2px 2px 0 var(--ink-5),inset -2px -2px 0 var(--edge);
+  padding:calc(var(--u)*2.5) calc(var(--u)*3);font-size:.86rem;min-height:44px}
+.choice-btn:hover{background:var(--ink-4)}
+.choice-btn .choice-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.choice-btn svg{width:12px;height:12px;color:var(--grey-2);transition:transform var(--dur-2) var(--ease)}
+.choice-btn[aria-expanded="true"] svg{transform:rotate(90deg)}
+.choice-menu{position:fixed;z-index:140;background:var(--panel);border:var(--bw) solid var(--edge);
+  box-shadow:inset 0 0 0 2px var(--panel-2),inset 0 0 0 4px var(--line),0 16px 34px rgba(0,0,0,.55);
+  padding:calc(var(--u)*1.5);overflow-y:auto;animation:fadeUp var(--dur-2) var(--ease-out)}
+.choice-opt{appearance:none;width:100%;display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*3);
+  background:transparent;border:2px solid transparent;color:var(--text);cursor:pointer;text-align:left;
+  padding:calc(var(--u)*2.5) calc(var(--u)*3);font-size:.86rem;min-height:40px}
+.choice-opt:hover,.choice-opt:focus-visible{background:var(--ink-4);color:var(--text-hi)}
+.choice-opt[aria-selected="true"]{background:var(--bone);color:var(--accent-ink);border-color:var(--edge)}
+.choice-opt .choice-check{width:12px;height:12px;flex:none;opacity:0}
+.choice-opt[aria-selected="true"] .choice-check{opacity:1}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*4);padding:calc(var(--u)*3.5) 0}
+.switch{
+  --w:56px;--h:28px;
+  appearance:none;cursor:pointer;position:relative;flex:none;width:var(--w);height:var(--h);
+  background:var(--ink-1);border:var(--bw) solid var(--edge);box-shadow:inset 2px 2px 0 var(--edge),inset -2px -2px 0 var(--line);
+  transition:background var(--dur-2) var(--ease);
+}
+.switch::after{
+  content:"";position:absolute;top:2px;left:2px;width:calc(var(--h) - 10px);height:calc(var(--h) - 10px);
+  background:var(--grey);box-shadow:inset 2px 2px 0 var(--grey-2),inset -2px -2px 0 var(--edge);
+  transition:transform var(--dur-2) var(--ease),background var(--dur-2) var(--ease);
+}
+.switch[aria-checked="true"]{background:var(--ink-5)}
+.switch[aria-checked="true"]::after{transform:translateX(calc(var(--w) - var(--h) + 2px));background:var(--bone);box-shadow:inset 2px 2px 0 var(--white),inset -2px -2px 0 var(--grey)}
+.switch:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+/* ==========================================================================
+   8. LAYOUT / PAGES
+   ========================================================================== */
+#app{position:relative;z-index:1;max-width:1180px;margin:0 auto;
+  padding:calc(var(--u)*10) calc(var(--u)*4) calc(var(--u)*16 + env(safe-area-inset-bottom,0px));
+  min-height:calc(100dvh - 70px)}
+.page{display:none}
+.page.is-active{display:block}
+.page.is-enter{animation:pageIn var(--dur-3) var(--ease-out) both}
+.page.is-exit{animation:pageOut 140ms var(--ease-in) both}
+@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pageOut{from{opacity:1}to{opacity:0;transform:translateY(-8px)}}
+.page-head{margin-bottom:calc(var(--u)*6)}
+.eyebrow{display:inline-flex;align-items:center;gap:calc(var(--u)*2);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-dim);margin-bottom:calc(var(--u)*3)}
+.eyebrow::before{content:"";width:22px;height:4px;background:var(--bone)}
+.grid{display:grid;gap:calc(var(--u)*4)}
+.grid--2{grid-template-columns:1fr}
+.grid--3{grid-template-columns:1fr}
+@media (min-width:640px){.grid--2{grid-template-columns:repeat(2,1fr)}.grid--3{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1000px){.grid--3{grid-template-columns:repeat(3,1fr)}}
+.stack{display:flex;flex-direction:column;gap:calc(var(--u)*4)}
+.row{display:flex;flex-wrap:wrap;gap:calc(var(--u)*3);align-items:center}
+.spread{display:flex;flex-wrap:wrap;gap:calc(var(--u)*3);align-items:center;justify-content:space-between}
+
+/* hero */
+.hero{display:grid;gap:calc(var(--u)*6);align-items:center;padding:calc(var(--u)*4) 0 calc(var(--u)*8)}
+@media (min-width:900px){.hero{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
+.hero-badge{display:inline-flex;align-items:center;gap:calc(var(--u)*2);border:var(--bw) solid var(--line);background:var(--ink-2);padding:calc(var(--u)*1.5) calc(var(--u)*3);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--grey-2)}
+.hero-badge .dot{width:8px;height:8px;background:var(--bone);animation:blink 2.4s steps(2,end) infinite}
+@keyframes blink{50%{opacity:.25}}
+.hero h1{margin:calc(var(--u)*4) 0}
+.hero .lede{font-size:clamp(.95rem,2.4vw,1.06rem);color:var(--text);max-width:56ch}
+.hero-cta{display:flex;flex-wrap:wrap;gap:calc(var(--u)*3);margin-top:calc(var(--u)*6)}
+.hero-card{padding:calc(var(--u)*5);display:flex;flex-direction:column;gap:calc(var(--u)*4)}
+.hero-card .emblem-row{display:flex;align-items:center;gap:calc(var(--u)*4)}
+.hero-card .emblem-row img{width:64px;height:64px;image-rendering:pixelated}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:calc(var(--u)*2) calc(var(--u)*4);font-size:.86rem}
+.kv dt{color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;padding-top:2px}
+.kv dd{margin:0;color:var(--text-hi)}
+.stagger > *{animation:fadeUp var(--dur-4) var(--ease-out) both}
+.stagger > *:nth-child(1){animation-delay:60ms}
+.stagger > *:nth-child(2){animation-delay:130ms}
+.stagger > *:nth-child(3){animation-delay:200ms}
+.stagger > *:nth-child(4){animation-delay:270ms}
+.stagger > *:nth-child(5){animation-delay:340ms}
+.stagger > *:nth-child(6){animation-delay:410ms}
+
+/* cards & badges */
+.card{padding:calc(var(--u)*5);display:flex;flex-direction:column;gap:calc(var(--u)*3);transition:transform var(--dur-2) var(--ease),box-shadow var(--dur-2) var(--ease)}
+.card:hover{transform:translateY(-2px)}
+.card .card-ico{width:34px;height:34px;color:var(--grey-2)}
+.card h3{margin:0}
+.card p{margin:0;color:var(--text-dim);font-size:.9rem}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border:2px solid var(--edge);background:var(--ink-4);color:var(--grey-2)}
+.badge--stable{background:var(--bone);color:var(--accent-ink)}
+.badge--beta{background:var(--ink-1);color:var(--grey-2);border-style:dashed}
+.badge i{width:7px;height:7px;background:currentColor;flex:none}
+
+/* expandable region (grid-rows trick: cheap, no layout thrash) */
+.expander{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--dur-3) var(--ease)}
+.expander > div{overflow:hidden}
+.expander.open{grid-template-rows:1fr}
+.exp-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*3);background:transparent;border:0;color:var(--text-hi);cursor:pointer;padding:calc(var(--u)*2) 0;text-align:left;font-size:.84rem;letter-spacing:.06em;text-transform:uppercase}
+.exp-head svg{width:14px;height:14px;transition:transform var(--dur-2) var(--ease);flex:none}
+.exp-head[aria-expanded="true"] svg{transform:rotate(90deg)}
+
+/* ==========================================================================
+   9. PAGE-SPECIFIC
+   ========================================================================== */
+/* downloads */
+.release{padding:calc(var(--u)*5);display:flex;flex-direction:column;gap:calc(var(--u)*3)}
+.release.is-latest{box-shadow:inset 0 0 0 2px var(--panel-2),inset 0 0 0 4px var(--bone)}
+.release-head{display:flex;flex-wrap:wrap;gap:calc(var(--u)*2) calc(var(--u)*3);align-items:center;justify-content:space-between}
+.release-ver{font-size:1.12rem;color:var(--text-hi);letter-spacing:.06em}
+.release-meta{display:flex;flex-wrap:wrap;gap:calc(var(--u)*2) calc(var(--u)*3);color:var(--text-dim);font-size:.78rem}
+.release-actions{display:flex;flex-wrap:wrap;gap:calc(var(--u)*2);align-items:center}
+.release-status{font-size:.78rem;color:var(--text-dim);min-height:1.2em}
+.release-status.err{color:#f0b9bd}
+.release-status.ok{color:#bfe6c4}
+.filter-bar{display:flex;flex-wrap:wrap;gap:calc(var(--u)*3);align-items:center;justify-content:space-between;padding:calc(var(--u)*4);margin-bottom:calc(var(--u)*5)}
+/* changelog timeline */
+.tl{position:relative;padding-left:calc(var(--u)*7)}
+.tl::before{content:"";position:absolute;left:calc(var(--u)*2);top:6px;bottom:6px;width:4px;
+  background-image:linear-gradient(var(--line) 50%,transparent 0);background-size:4px 8px}
+.tl-item{position:relative;margin-bottom:calc(var(--u)*5)}
+.tl-item::before{content:"";position:absolute;left:calc(var(--u)*-5 - 1px);top:8px;width:12px;height:12px;background:var(--bone);box-shadow:0 0 0 3px var(--edge)}
+.tl-item.exp::before{background:var(--grey)}
+.cl-group{font-size:.74rem;letter-spacing:.24em;text-transform:uppercase;color:var(--text-dim);margin:calc(var(--u)*6) 0 calc(var(--u)*4)}
+/* optimization technique rows */
+.tech{padding:calc(var(--u)*4) calc(var(--u)*5);display:flex;gap:calc(var(--u)*4);align-items:flex-start}
+.tech .t-ico{width:26px;height:26px;flex:none;color:var(--grey-2);margin-top:2px}
+.tech h4{margin:0 0 4px;font-size:.94rem;color:var(--text-hi)}
+.tech p{margin:0;font-size:.88rem;color:var(--text-dim)}
+.myth{border-left:6px solid var(--line);padding:calc(var(--u)*3) calc(var(--u)*4);background:var(--ink-2)}
+.myth b{color:var(--text-hi)}
+/* settings */
+.set-row{padding:calc(var(--u)*4) calc(var(--u)*5);display:flex;gap:calc(var(--u)*4);align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.set-row .set-txt{flex:1 1 260px;min-width:0}
+.set-row h3{margin:0 0 4px;font-size:.95rem}
+.set-row p{margin:0;font-size:.84rem;color:var(--text-dim)}
+.set-ctl{flex:0 1 auto;max-width:100%;min-width:0;display:flex;align-items:center;gap:calc(var(--u)*2)}
+/* about */
+.about-grid{display:grid;gap:calc(var(--u)*4)}
+@media (min-width:900px){.about-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}}
+.linklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:calc(var(--u)*2)}
+.linklist a{display:inline-flex;align-items:center;gap:calc(var(--u)*2);color:var(--grey-2);text-decoration:none;padding:2px 0}
+.linklist a:hover{color:var(--white);text-decoration:underline}
+.linklist svg{width:13px;height:13px;flex:none}
+/* shipped-change rows (feature matrix) */
+.feat-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.feat-row{display:flex;gap:calc(var(--u)*3);align-items:baseline;padding:calc(var(--u)*2.5) calc(var(--u)*3);
+  background:var(--ink-2);border:2px solid var(--edge);box-shadow:inset 2px 2px 0 var(--ink-4);
+  transition:transform var(--dur-1) var(--ease),background var(--dur-1) var(--ease)}
+.feat-row:hover{background:var(--ink-3);transform:translateX(2px)}
+.feat-row .f-ico{width:12px;height:12px;color:var(--grey-2);flex:none;transform:translateY(1px)}
+.feat-row .f-name{color:var(--text-hi);font-size:.9rem;flex:1;min-width:0}
+.feat-row .f-mech{color:var(--text-dim);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+@media (max-width:640px){.feat-row{flex-wrap:wrap;gap:6px}.feat-row .f-mech{width:100%;white-space:normal}}
+.count-chip{display:inline-flex;align-items:center;gap:6px;background:var(--bone);color:var(--accent-ink);
+  border:2px solid var(--edge);padding:2px 8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+/* frame-walk stepper */
+.stepper{display:flex;flex-direction:column;gap:calc(var(--u)*4)}
+.step-progress{display:flex;gap:6px}
+.step-progress i{width:18px;height:8px;background:var(--ink-4);box-shadow:inset 0 0 0 2px var(--edge);transition:background var(--dur-2) var(--ease)}
+.step-progress i.on{background:var(--bone)}
+.step-body{min-height:110px}
+.step-body h3{margin:0 0 6px}
+.step-body p{margin:0;font-size:.92rem;color:var(--text)}
+.step-lever{margin-top:10px;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+.step-nav{display:flex;gap:calc(var(--u)*3);align-items:center;justify-content:space-between}
+/* version checker */
+.check-result{margin:10px 0 0;font-size:.9rem;padding:calc(var(--u)*3);border:2px solid var(--line);background:var(--ink-2)}
+.check-result.ok{border-color:var(--bone)}
+
+/* ==========================================================================
+   10. DIALOGS + TOASTS
+   ========================================================================== */
+#dialog-root{position:fixed;inset:0;z-index:140;display:none}
+#dialog-root.open{display:block}
+#dialog-root .scrim{position:absolute;inset:0;background:var(--scrim);animation:fadeIn var(--dur-2) var(--ease) both}
+#dialog-root.closing .scrim{animation:fadeOut var(--dur-2) var(--ease) both}
+.dlg{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(460px,calc(100vw - 32px));max-height:min(80dvh,640px);overflow-y:auto;
+  background:var(--panel);border:var(--bw) solid var(--edge);
+  box-shadow:inset 0 0 0 2px var(--panel-2),inset 0 0 0 4px var(--line),0 0 0 4px var(--edge),0 18px 50px rgba(0,0,0,.6);
+  padding:calc(var(--u)*6);
+  animation:dlgIn var(--dur-3) var(--ease-out) both;
+}
+#dialog-root.closing .dlg{animation:dlgOut var(--dur-2) var(--ease-in) both}
+@keyframes dlgIn{from{opacity:0;transform:translate(-50%,-46%) scale(.94)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes dlgOut{from{opacity:1}to{opacity:0;transform:translate(-50%,-47%) scale(.97)}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+.dlg-ico{width:34px;height:34px;margin-bottom:calc(var(--u)*3)}
+.dlg h2{font-size:1.05rem;margin-bottom:calc(var(--u)*3)}
+.dlg p{font-size:.9rem;color:var(--text)}
+.dlg .dlg-actions{display:flex;gap:calc(var(--u)*3);justify-content:flex-end;flex-wrap:wrap;margin-top:calc(var(--u)*6)}
+#toast-root{position:fixed;z-index:150;left:50%;transform:translateX(-50%);bottom:calc(var(--u)*5 + env(safe-area-inset-bottom,0px));
+  width:min(440px,calc(100vw - 24px));display:flex;flex-direction:column;gap:calc(var(--u)*2);pointer-events:none}
+.toast{
+  pointer-events:auto;display:flex;align-items:flex-start;gap:calc(var(--u)*3);
+  background:var(--ink-2);border:var(--bw) solid var(--edge);
+  box-shadow:inset 2px 2px 0 var(--ink-5),inset -2px -2px 0 var(--edge),0 8px 22px rgba(0,0,0,.5);
+  padding:calc(var(--u)*3) calc(var(--u)*4);font-size:.84rem;color:var(--text-hi);
+  animation:toastIn var(--dur-3) var(--ease-out) both;
+}
+.toast.out{animation:toastOut var(--dur-2) var(--ease-in) both}
+.toast svg{width:16px;height:16px;flex:none;margin-top:2px}
+.toast .t-msg{flex:1;min-width:0}
+.toast .t-close{background:none;border:0;color:var(--text-dim);cursor:pointer;padding:2px;line-height:0}
+.toast .t-close:hover{color:var(--white)}
+.toast .t-close svg{width:12px;height:12px}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(8px)}}
+
+/* ==========================================================================
+   11. INDICATORS / EMPTY STATES
+   ========================================================================== */
+.empty{padding:calc(var(--u)*8) calc(var(--u)*5);text-align:center;display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*3)}
+.empty svg{width:40px;height:40px;color:var(--line-hi)}
+.empty p{color:var(--text-dim);margin:0;max-width:44ch}
+.spinner{width:18px;height:18px;display:inline-block;background:var(--grey-2);
+  clip-path:polygon(0 0,33% 0,33% 33%,66% 33%,66% 0,100% 0,100% 66%,66% 66%,66% 100%,33% 100%,33% 66%,0 66%);
+  animation:spinSteps 640ms steps(4,end) infinite}
+
+/* ==========================================================================
+   12. MOTION PREFERENCES
+   ========================================================================== */
+html[data-anim="reduced"] *,html[data-anim="reduced"] *::before,html[data-anim="reduced"] *::after{
+  animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}
+html[data-anim="off"] *,html[data-anim="off"] *::before,html[data-anim="off"] *::after{
+  animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}
+}
+html.no-js .page[data-page="home"]{display:block}
+html:not(.no-js) #boot{display:flex}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#app">Skip to content</a>
+
+<!-- Ambient background: uniform dither grain over the document plus two
+     in-flow scene bands (top and mirrored footer). Nothing is pinned, so
+     scrolling never shifts the artwork. -->
+<div id="bg" aria-hidden="true">
+  <div class="grain"></div>
+  <div class="scene-band"><div class="scene"></div></div>
+  <div class="scene-band scene-band--end"><div class="scene"></div></div>
+</div>
+
+<!-- First-run entrance. A failsafe timer in the script always removes this. -->
+<div id="boot" role="status" aria-live="polite" aria-label="Loading interface">
+  <img class="emblem px-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAACp0lEQVR42q2Wv2rrMBTGTyMPegDTyXgpBC/pKjAeS8bSDlnKhUx9Au0esmvMlCmj52yeBUGjty5dDCKlBPoKd/jg9CDnhgxXQ6JE0k/nfOePfZfn98vlsu97+h8DqLs8v79lK89vuT6TN8iJJFprk2PX0dlFCp8EsaoqXrXWhhCu35HhN5vZNI1cBvHj42NqTrJTcn81BdEYAwrMMcaEEPA55RpjMHHOSe4s2SSJRIRJQjTGABdCwFIieqopiKDzT2kUg6YW8FCn0xdmDw8PSqkY40Wic+54PCqljDExRiKKMWqtq6rSWnddR0Sfn58X3PfeExETnXPeexARGdiLP6UsTdNYazltZjIZ+dh+vw8hJEp579l3OUII3vuqqpib4QupkxzAPuccXwYR4dB0VFW12+3e39/VYvG42+3yPCcirbVz7ufnB8Jtt9u6ruu67roOgg7D0HUd578x5nw+xxjHcXx+fgb6cDjMrlcxZ4y11nvvvYdPbCx8t9bKAsmmdYLDCRf/gLjf7yVRlhbQarF4nM/ncP98PhdFoZQqy3K1WimlvPdlWRLRarWq6zqEMAwDEY3jOI5jWZZYLYoCx51zfd+r0+nr+/sb3DzPoRERPT09aa3BHccRKSwzD9EriiLGGGMsigJEIlIvL69930uu1jrGOAwDKDAHocMFMmc5+Y/HI1dmJnto0uWmEWP5ZNWhNOS4e3v7M21ostI5aE3TrNfrpEuwFETUtm0afSxwNNlkWZEcd6msNAJ+Z0lzROvk0pIdum1b+bCSuKSRZ1I1ViqEAKW4eNg1Kat0SJb4L7Rt281mM23p/KRBb+e4y34WQuBb00BdfEZKl3nPZrNhrb338uByuUyjP+Um0OvPZ2xOof86z+7f8sIxu/HdpO/721+N/gKL5fr0Oeys+wAAAABJRU5ErkJggg==" alt="">
+  <div class="boot-title">Loading interface</div>
+  <div class="boot-bar" aria-hidden="true"><i></i></div>
+  <div class="boot-hint">mono &bull; pixel &bull; bedrock</div>
+</div>
+
+<!-- ============================ PERSISTENT NAV ============================ -->
+<header id="topbar">
+  <div class="bar">
+    <a class="brand" href="#home" data-nav="home">
+      <img class="px-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAACp0lEQVR42q2Wv2rrMBTGTyMPegDTyXgpBC/pKjAeS8bSDlnKhUx9Au0esmvMlCmj52yeBUGjty5dDCKlBPoKd/jg9CDnhgxXQ6JE0k/nfOePfZfn98vlsu97+h8DqLs8v79lK89vuT6TN8iJJFprk2PX0dlFCp8EsaoqXrXWhhCu35HhN5vZNI1cBvHj42NqTrJTcn81BdEYAwrMMcaEEPA55RpjMHHOSe4s2SSJRIRJQjTGABdCwFIieqopiKDzT2kUg6YW8FCn0xdmDw8PSqkY40Wic+54PCqljDExRiKKMWqtq6rSWnddR0Sfn58X3PfeExETnXPeexARGdiLP6UsTdNYazltZjIZ+dh+vw8hJEp579l3OUII3vuqqpib4QupkxzAPuccXwYR4dB0VFW12+3e39/VYvG42+3yPCcirbVz7ufnB8Jtt9u6ruu67roOgg7D0HUd578x5nw+xxjHcXx+fgb6cDjMrlcxZ4y11nvvvYdPbCx8t9bKAsmmdYLDCRf/gLjf7yVRlhbQarF4nM/ncP98PhdFoZQqy3K1WimlvPdlWRLRarWq6zqEMAwDEY3jOI5jWZZYLYoCx51zfd+r0+nr+/sb3DzPoRERPT09aa3BHccRKSwzD9EriiLGGGMsigJEIlIvL69930uu1jrGOAwDKDAHocMFMmc5+Y/HI1dmJnto0uWmEWP5ZNWhNOS4e3v7M21ostI5aE3TrNfrpEuwFETUtm0afSxwNNlkWZEcd6msNAJ+Z0lzROvk0pIdum1b+bCSuKSRZ1I1ViqEAKW4eNg1Kat0SJb4L7Rt281mM23p/KRBb+e4y34WQuBb00BdfEZKl3nPZrNhrb338uByuUyjP+Um0OvPZ2xOof86z+7f8sIxu/HdpO/721+N/gKL5fr0Oeys+wAAAABJRU5ErkJggg==" alt="">
+      <span>
+        <span class="b-name" data-cfg="shortName">Flow</span>
+        <span class="b-sub">Minecraft Bedrock</span>
+      </span>
+    </a>
+    <nav id="nav-desktop" aria-label="Primary"></nav>
+    <button id="menu-toggle" class="icon-btn" type="button" aria-expanded="false" aria-controls="nav-mobile" aria-label="Open navigation menu"></button>
+  </div>
+</header>
+<nav id="nav-mobile" aria-label="Primary mobile"></nav>
+
+<main id="app">
+
+  <!-- ============================== HOME ============================== -->
+  <section class="page" data-page="home" aria-labelledby="home-h">
+    <div class="hero">
+      <div class="stagger">
+        <span class="hero-badge"><i class="dot" aria-hidden="true"></i><span data-cfg="badge">Bedrock Edition &bull; resource pack</span></span>
+        <h1 id="home-h" data-cfg="name">Flow</h1>
+        <p class="lede" data-cfg="description">Flow is a resource pack for Minecraft Bedrock Edition that makes the client do less work: fewer particle emitters, static animations where motion adds nothing, renderer configuration, lightweight fog and a calmer interface. Pure pack data, no behavior pack, no scripts.</p>
+        <div class="hero-cta">
+          <button class="btn btn--primary px" type="button" data-nav="features" data-icon="grid">Explore the feature matrix</button>
+          <button class="btn btn--ghost px" type="button" data-nav="optimization" data-icon="bolt">How it works</button>
+          <button class="btn btn--ghost px" type="button" data-scroll="compat-panel" data-icon="check">Check your version</button>
+        </div>
+      </div>
+      <div class="hero-card panel px stagger" id="home-facts">
+        <div class="emblem-row">
+          <img class="px-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAACp0lEQVR42q2Wv2rrMBTGTyMPegDTyXgpBC/pKjAeS8bSDlnKhUx9Au0esmvMlCmj52yeBUGjty5dDCKlBPoKd/jg9CDnhgxXQ6JE0k/nfOePfZfn98vlsu97+h8DqLs8v79lK89vuT6TN8iJJFprk2PX0dlFCp8EsaoqXrXWhhCu35HhN5vZNI1cBvHj42NqTrJTcn81BdEYAwrMMcaEEPA55RpjMHHOSe4s2SSJRIRJQjTGABdCwFIieqopiKDzT2kUg6YW8FCn0xdmDw8PSqkY40Wic+54PCqljDExRiKKMWqtq6rSWnddR0Sfn58X3PfeExETnXPeexARGdiLP6UsTdNYazltZjIZ+dh+vw8hJEp579l3OUII3vuqqpib4QupkxzAPuccXwYR4dB0VFW12+3e39/VYvG42+3yPCcirbVz7ufnB8Jtt9u6ruu67roOgg7D0HUd578x5nw+xxjHcXx+fgb6cDjMrlcxZ4y11nvvvYdPbCx8t9bKAsmmdYLDCRf/gLjf7yVRlhbQarF4nM/ncP98PhdFoZQqy3K1WimlvPdlWRLRarWq6zqEMAwDEY3jOI5jWZZYLYoCx51zfd+r0+nr+/sb3DzPoRERPT09aa3BHccRKSwzD9EriiLGGGMsigJEIlIvL69930uu1jrGOAwDKDAHocMFMmc5+Y/HI1dmJnto0uWmEWP5ZNWhNOS4e3v7M21ostI5aE3TrNfrpEuwFETUtm0afSxwNNlkWZEcd6msNAJ+Z0lzROvk0pIdum1b+bCSuKSRZ1I1ViqEAKW4eNg1Kat0SJb4L7Rt281mM23p/KRBb+e4y34WQuBb00BdfEZKl3nPZrNhrb338uByuUyjP+Um0OvPZ2xOof86z+7f8sIxu/HdpO/721+N/gKL5fr0Oeys+wAAAABJRU5ErkJggg==" alt="Pack emblem">
+          <div>
+            <div style="color:var(--text-hi);letter-spacing:.1em;text-transform:uppercase;font-size:.9rem" data-cfg="shortName">Flow</div>
+            <div class="mono-dim" style="font-size:.74rem;letter-spacing:.18em;text-transform:uppercase" data-cfg="tagline">quiet world, steady frames</div>
+          </div>
+        </div>
+        <dl class="kv" id="home-kv"><!-- filled from PRODUCT_CONFIG --></dl>
+        <div class="row" id="home-compat-chips" style="gap:8px"></div>
+      </div>
+    </div>
+
+    <hr class="rule">
+
+    <!-- Interactive module 1: what the pack changes, by category -->
+    <div class="page-head">
+      <span class="eyebrow">Inside the pack</span>
+      <h2>Seven levers, <span id="home-total-count">60</span>+ shipped changes</h2>
+      <p class="mono-dim" style="max-width:62ch">Pick a category to preview what Flow changes and which pack mechanism does it. The full matrix lives on the Features page.</p>
+    </div>
+    <div class="tabs" id="home-tabs" role="tablist" aria-label="Optimization categories"></div>
+    <div id="home-panels" style="margin-top:20px"></div>
+
+    <hr class="rule">
+
+    <!-- Interactive module 2: where a Bedrock frame gets cheaper -->
+    <div class="page-head">
+      <span class="eyebrow">Frame walk</span>
+      <h2>Where the work disappears</h2>
+      <p class="mono-dim" style="max-width:62ch">Step through the five stages a Bedrock client passes on the way to a drawn frame, and see which ones Flow lightens.</p>
+    </div>
+    <div class="panel px stepper" id="frame-walk">
+      <div class="step-progress" id="step-progress" aria-hidden="true"></div>
+      <div class="step-body" id="step-body" aria-live="polite"></div>
+      <div class="step-nav">
+        <button class="btn btn--ghost btn--sm px" type="button" id="step-prev" data-icon="chevron">Previous</button>
+        <span class="mono-dim" id="step-count" style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase"></span>
+        <button class="btn btn--sm px" type="button" id="step-next" data-icon="chevron">Next</button>
+      </div>
+    </div>
+
+    <hr class="rule">
+
+    <!-- Interactive module 3: compatibility checker -->
+    <section class="panel px" id="compat-panel" aria-labelledby="compat-h" style="scroll-margin-top:90px">
+      <span class="eyebrow">Compatibility</span>
+      <h2 id="compat-h">Supported editions &amp; versions</h2>
+      <div class="grid grid--2" style="margin-top:16px">
+        <div>
+          <dl class="kv" id="compat-kv"></dl>
+          <div class="row" id="home-compat-chips-2" style="gap:8px;margin-top:12px"></div>
+        </div>
+        <div>
+          <p class="mono-dim" style="font-size:.88rem" id="compat-note"></p>
+          <div class="field" style="margin-top:12px;max-width:320px">
+            <span class="field-label" id="compat-label">Your Minecraft version</span>
+            <div id="compat-choice"></div>
+          </div>
+          <p class="check-result" id="compat-result" role="status"></p>
+          <div class="row" style="margin-top:12px">
+            <button class="btn btn--sm btn--ghost px" type="button" data-nav="changelog" data-icon="scroll">Read the changelog</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ============================ FEATURES ============================ -->
+  <section class="page" data-page="features" aria-labelledby="feat-h" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Feature matrix</span>
+      <h2 id="feat-h">Everything Flow ships</h2>
+      <p class="mono-dim" style="max-width:64ch"><span class="count-chip" id="feat-total">0 changes</span>
+        &nbsp;Every row below is implemented in the current release and names the pack mechanism that makes it work.</p>
+    </div>
+    <div class="tabs" id="feat-tabs" role="tablist" aria-label="Feature categories"></div>
+    <div id="feat-panels" style="margin-top:20px"></div>
+  </section>
+
+  <!-- ========================== OPTIMIZATION ========================== -->
+  <section class="page" data-page="optimization" aria-labelledby="opt-h" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Optimization philosophy</span>
+      <h2 id="opt-h">Real work removed, not pixels hidden</h2>
+      <p class="mono-dim" style="max-width:66ch">A resource pack can only change what the game loads and draws through supported asset
+        and definition files. This page separates what the format genuinely supports from what needs scripting, and from what it cannot do at all.</p>
+    </div>
+    <div class="tabs" id="opt-tabs" role="tablist" aria-label="Optimization topics"></div>
+    <div id="opt-panels" style="margin-top:20px"></div>
+  </section>
+
+  <!-- =========================== DOWNLOADS =========================== -->
+  <section class="page" data-page="downloads" aria-labelledby="dl-h" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Download center</span>
+      <h2 id="dl-h">Releases</h2>
+      <p class="mono-dim" style="max-width:64ch">Downloads open your configured file host in a new tab. Nothing is transferred by this site and no download is ever simulated.</p>
+    </div>
+    <div id="dl-latest" style="margin-bottom:24px"></div>
+    <div class="filter-bar panel px" id="dl-filters"></div>
+    <div class="stack" id="dl-list" aria-live="polite"></div>
+  </section>
+
+  <!-- =========================== CHANGELOG =========================== -->
+  <section class="page" data-page="changelog" aria-labelledby="cl-h" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Version history</span>
+      <h2 id="cl-h">Changelog</h2>
+      <p class="mono-dim" style="max-width:64ch">Generated from the same release data as the download page, so the two can never disagree.</p>
+    </div>
+    <div id="cl-body"></div>
+  </section>
+
+  <!-- ============================= ABOUT ============================= -->
+  <section class="page" data-page="about" aria-labelledby="about-h" hidden>
+    <div class="page-head">
+      <span class="eyebrow">About</span>
+      <h2 id="about-h">The project</h2>
+    </div>
+    <div class="about-grid" id="about-body"></div>
+  </section>
+
+  <!-- ============================ SETTINGS ============================ -->
+  <section class="page" data-page="settings" aria-labelledby="set-h" hidden>
+    <div class="page-head">
+      <span class="eyebrow">Settings</span>
+      <h2 id="set-h">Interface preferences</h2>
+      <p class="mono-dim" style="max-width:64ch">These options control <b>this website only</b>. They are stored in your browser and never touch Minecraft.</p>
+    </div>
+    <div class="panel px stack" id="settings-body" style="gap:0"></div>
+    <div class="row" style="margin-top:20px;justify-content:space-between">
+      <p class="mono-dim" style="font-size:.78rem;margin:0" id="settings-state"></p>
+      <button class="btn btn--danger px" type="button" id="settings-reset" data-icon="reset">Reset settings</button>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- ======================= DIALOG + TOAST ROOTS ======================= -->
+<div id="dialog-root" aria-hidden="true">
+  <div class="scrim"></div>
+  <div class="dlg px" role="dialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-body">
+    <span class="dlg-ico" id="dlg-ico" data-icon="warn"></span>
+    <h2 id="dlg-title">Title</h2>
+    <div id="dlg-body"><p>Body</p></div>
+    <div class="dlg-actions" id="dlg-actions"></div>
+  </div>
+</div>
+<div id="toast-root" role="status" aria-live="polite" aria-atomic="false"></div>
+<script>
+/* ==========================================================================
+   0. BOOT FAILSAFE
+   Runs before anything else, so the entrance overlay can never trap the
+   user even if a later initialisation step throws.
+   ========================================================================== */
+(function () {
+  setTimeout(function () {
+    var b = document.getElementById("boot");
+    if (b && !b.classList.contains("done")) b.classList.add("done");
+    if (document.body) document.body.classList.add("ready");
+  }, 3500);
+})();
+
+/* ==========================================================================
+   1. CONFIGURATION. Edit these objects to publish real pack data.
+   Every page derives its content from here. Nothing below hard codes
+   release information.
+   ========================================================================== */
+const PRODUCT_CONFIG = {
+  name: "Flow",
+  shortName: "Flow",
+  tagline: "quiet world, steady frames",
+  badge: "Bedrock Edition • resource pack",
+  description: "Flow is a resource pack for Minecraft Bedrock Edition that makes the client do less work: fewer particle emitters, static animations where motion adds nothing, renderer configuration, lightweight fog and a calmer interface. Pure pack data, no behavior pack, no scripts.",
+  edition: "Minecraft Bedrock Edition",
+  packType: "Resource pack only",
+  behaviorPack: "Not required",
+  scripting: "None",
+  minGameVersion: "1.21.0",
+  platforms: ["Windows", "Xbox", "PlayStation", "Nintendo Switch", "Android", "iOS"],
+  releases: [
+    {
+      version: "1.2",
+      channel: "stable",
+      date: "2026-09-18",
+      mc: "1.21.0 and newer",
+      fileName: "flow-v1.2.mcpack",
+      downloadUrl: "https://sub2unlock.io/4xlbC",
+      notes: [
+        "All six optimization categories merged into one pack build",
+        "Panorama faces and GUI sprite atlas downsized",
+        "Rain, cave and nether ambient loops silenced in sound definitions",
+        "Renderer Folder with configs"
+      ]
+    },
+    {
+      version: "1.1",
+      channel: "beta",
+      date: "2026-08-21",
+      mc: "1.21.0 and newer",
+      fileName: "flow-v1.1.mcpack",
+      downloadUrl: "https://sub2unlock.io/4xlbC",
+      notes: [
+        "Initial Flow release",
+        "Per biome fog definitions for all overworld biomes",
+        "Water, lava and portal flipbooks replaced with static frames",
+        "Vignette and pumpkin overlays removed from the HUD"
+      ]
+    }
+  ]
+};
+
+/* Compatibility checker options. ok means the pack manifest accepts it. */
+const COMPAT_OPTIONS = [
+  { v: "1.26.52", ok: true },
+  { v: "1.26.45", ok: true },
+  { v: "1.26.0", ok: true },
+  { v: "1.21.0", ok: false },
+  { v: "1.20.0", ok: false },
+  { v: "1.19.0", ok: false }
+];
+
+/* ==========================================================================
+   2. FEATURE MATRIX. Every entry is shipped in the current release.
+   "via" names the pack mechanism that performs the change, because a
+   resource pack can only affect what definition and asset files control.
+   ========================================================================== */
+const FEATURE_CATEGORIES = [
+  {
+    id: "particles", label: "Particles", icon: "spark",
+    blurb: "Particle emitters are per frame CPU work. Flow overrides the emitter definitions for weather, fire and ambient effects so the client spawns less, or nothing at all.",
+    items: [
+      ["Rain streak particles removed", "Particle definition", "The rain emitter rate is set to zero, so storm rendering skips streak spawning entirely."],
+      ["Rain splash particles removed", "Particle definition", "Ground splash emitters no longer fire where rain lands."],
+      ["Snowfall particles removed", "Particle definition", "Snow biome weather emitters are zeroed."],
+      ["Campfire smoke removed", "Particle definition", "Both regular and soul campfire smoke columns are disabled."],
+      ["Torch flame particles trimmed", "Particle definition", "Emitter rate and particle lifetime are cut, so each torch costs less per second."],
+      ["End rod sparkle removed", "Particle definition", "Idle sparkle emission from end rods is switched off."],
+      ["Nether portal ambient particles removed", "Particle definition", "The drifting portal motes around portal blocks no longer spawn."],
+      ["Cherry petal fall removed", "Particle definition", "Cherry grove petal emitters are disabled."],
+      ["Spore blossom particles removed", "Particle definition", "Lush cave spore drift is switched off."],
+      ["Basalt deltas ash reduced", "Particle definition", "Ash emitter density lowered to a fraction of the default."],
+      ["Crimson and warped spore drift reduced", "Particle definition", "Nether forest ambient spores spawn far less often."],
+      ["Dripping water and lava particles removed", "Particle definition", "Ceiling drip emitters under blocks are zeroed."],
+      ["Bubble column particles trimmed", "Particle definition", "Bubble emitter rate cut while the column still reads clearly."]
+    ]
+  },
+  {
+    id: "animation", label: "Animation", icon: "film",
+    blurb: "Flipbook textures make the renderer step through frame strips every tick. Flow ships single frame textures for surfaces where the motion carries no gameplay information.",
+    items: [
+      ["Water surface animation frozen", "Flipbook textures", "Water uses one static frame instead of a cycling strip."],
+      ["Lava animation frozen", "Flipbook textures", "Lava renders as a single frame."],
+      ["Nether portal texture frozen", "Flipbook textures", "The portal surface no longer cycles its frame strip."],
+      ["Sea lantern animation frozen", "Flipbook textures", "Sea lanterns use one frame."],
+      ["Prismarine animation frozen", "Flipbook textures", "Prismarine blocks stop cycling colour frames."],
+      ["Bubble column texture frozen", "Flipbook textures", "The column side texture is a single frame."],
+      ["Fire animation frames halved", "Flipbook textures", "Fire keeps its motion at half the frame count."],
+      ["Soul fire animation frames halved", "Flipbook textures", "Soul fire matches the reduced fire strip."],
+      ["Seagrass sway frames removed", "Flipbook textures", "Seagrass renders from a single frame."],
+      ["Kelp animation frames removed", "Flipbook textures", "Kelp uses a static texture instead of a tall frame strip."]
+    ]
+  },
+  {
+    id: "renderer", label: "Renderer", icon: "gear",
+    blurb: "Current Bedrock builds read renderer configuration from the pack renderer folder. Flow uses the rendering settings exposed there to pick cheaper paths for visual effects that do not carry gameplay information.",
+    items: [
+      ["Renderer configuration shipped in pack", "Renderer folder", "Flow includes the renderer configuration files current Bedrock builds recognise, alongside the other pack data."],
+      ["Post-processing effects reduced", "Renderer configuration", "Costly full screen effects are toned down where the renderer settings expose them."],
+      ["Shadow detail reduced", "Renderer configuration", "Shadow rendering uses lighter settings, cutting scene pass cost in bright areas."],
+      ["Lighting effects simplified", "Renderer configuration", "Non essential lighting effects use simpler renderer paths."],
+      ["Water rendering simplified", "Renderer configuration", "Water surface rendering uses cheaper renderer options."],
+      ["Sky and atmosphere simplified", "Renderer configuration", "Sky and atmospheric effects use lighter renderer paths."],
+      ["Transparent surfaces simplified", "Renderer configuration", "Glass, water and ice transparency uses cheaper rendering choices where the configuration exposes them."]
+    ]
+  },
+  {
+    id: "fog", label: "Fog and sky", icon: "fog",
+    blurb: "Fog definitions are real pack data in Bedrock. Flow ships per biome fog files with no volumetric block, so the client skips volumetric fog evaluation while distance fog still hides chunk edges.",
+    items: [
+      ["Overworld biome fog set", "Fog definitions", "A fog file for the overworld biome family plus a catch all default."],
+      ["Cave fog simplified", "Fog definitions", "Underground fog uses a plain distance curve only."],
+      ["Underwater fog simplified", "Fog definitions", "Water fog keeps visibility cues without extra density layers."],
+      ["Nether fog simplified", "Fog definitions", "Nether fog definitions drop layered density."],
+      ["Volumetric fog omitted everywhere", "Fog definitions", "No fog file ships a volumetric block, so that pass has nothing to evaluate."],
+      ["Cloud texture downsized", "Texture file", "The cloud sheet is smaller, so sky rendering reads less data."],
+      ["Sun and moon sprites downsized", "Texture file", "Sky body sprites ship at reduced resolution."],
+      ["Star field texture downsized", "Texture file", "The night sky sheet is compacted."],
+      ["Rain weather sheet blanked", "Texture file", "With rain emitters off, the rain sheet carries no visible streaks."],
+      ["End sky texture made static", "Texture file", "The End sky no longer needs an animated sheet."]
+    ]
+  },
+  {
+    id: "audio", label: "Audio", icon: "sound",
+    blurb: "Sound definitions decide which loops the client streams and decodes. Flow zeroes the ambient loops that run constantly in the background. Gameplay sounds stay untouched.",
+    items: [
+      ["Rain loop silenced", "Sound definitions", "Rain weather audio no longer streams while it rains."],
+      ["Cave ambience silenced", "Sound definitions", "Random cave mood sounds are removed from the definition set."],
+      ["Underwater ambience silenced", "Sound definitions", "The underwater loop set is zeroed."],
+      ["Nether ambience loops silenced", "Sound definitions", "Biome mood loops in the nether are removed."],
+      ["Nether portal loop silenced", "Sound definitions", "The idle portal hum no longer plays near portals."],
+      ["Drip sounds removed", "Sound definitions", "Dripstone and ceiling drip sounds are taken out."],
+      ["Bubble column sounds trimmed", "Sound definitions", "Column bubbling volume and frequency are reduced."],
+      ["Fire crackle loops reduced", "Sound definitions", "Campfire and fire crackle loops play at lower volume."]
+    ]
+  },
+  {
+    id: "hud", label: "Interface", icon: "hud",
+    blurb: "HUD and menu screens are drawn from UI definition files and GUI textures. Flow removes full screen overlays and shrinks the sheets the interface reads every frame.",
+    items: [
+      ["Vignette overlay removed", "UI definition", "The darkened screen edge overlay is not drawn."],
+      ["Pumpkin overlay removed", "UI definition", "The carved pumpkin blur is replaced with a clear view."],
+      ["Powder snow overlay simplified", "UI definition", "The freezing edge effect uses a lighter texture."],
+      ["Menu panorama made static", "Texture file", "The rotating menu backdrop uses downsized still faces."],
+      ["Menu background texture downsized", "Texture file", "The dirt background sheet ships smaller."],
+      ["GUI sprite atlas downsized", "Texture file", "Buttons, slots and icons read from a compact atlas."],
+      ["Inventory background downsized", "Texture file", "Container screens use reduced resolution panels."],
+      ["Boss bar textures downsized", "Texture file", "Boss bar sheets ship at half resolution."],
+      ["Experience bar simplified", "Texture file", "The XP bar uses a flat lightweight texture."],
+      ["HUD icon set downsized", "Texture file", "Hearts, hunger and armor icons come from a smaller sheet."],
+      ["Loading screen backdrop downsized", "Texture file", "The world loading background texture is reduced."],
+      ["Chat backdrop lightened", "UI definition", "Chat renders without the heavy backdrop texture."]
+    ]
+  },
+  {
+    id: "textures", label: "Textures and memory", icon: "box",
+    blurb: "Every texture the pack ships is memory the client holds and reads. Flow downsizes noisy high frequency sheets and compacts the atlases left behind after emitter removal.",
+    items: [
+      ["Particle atlas compacted", "Texture file", "With most emitters off, the particle sheet ships in compact form."],
+      ["Environment sheet downsized", "Texture file", "Sun, moon and weather sprites share one small sheet."],
+      ["Panorama faces downsized", "Texture file", "All six menu panorama faces are reduced."],
+      ["Painting atlas downsized", "Texture file", "The painting sheet ships at lower resolution."],
+      ["Grass colormap downsized", "Colormap", "The biome grass tint map is smaller."],
+      ["Foliage colormap downsized", "Colormap", "Leaf tint lookups use a compact map."],
+      ["Dirt family at half resolution", "Texture file", "Dirt, coarse dirt and rooted dirt textures are halved."],
+      ["Sand and gravel at half resolution", "Texture file", "Sand, red sand and gravel textures are halved."],
+      ["Stone family at half resolution", "Texture file", "Stone, andesite, diorite and granite are halved."],
+      ["Netherrack family at half resolution", "Texture file", "Netherrack, soul sand and soul soil are halved."],
+      ["Leaf textures simplified", "Texture file", "Oak, spruce and birch leaves use simpler cutouts."],
+      ["Planks and logs at half resolution", "Texture file", "Common wood surfaces ship smaller."],
+      ["Glass texture cleaned", "Texture file", "Glass keeps only its border, with no streak noise."]
+    ]
+  }
+];
+
+/* Frame walk for the home page stepper. */
+const FRAME_STEPS = [
+  { title: "Stage 1. Simulation tick", body: "The client ticks entities, redstone and the player. A resource pack cannot change this stage, and Flow does not pretend to.", lever: "Pack lever: none. This stage needs game code, which a resource pack is not." },
+  { title: "Stage 2. Asset loading", body: "Textures, particles, sounds and UI files are read into memory. Smaller sheets and fewer definitions mean less to decode and hold.", lever: "Pack lever: downsized atlases, colormaps and texture files." },
+  { title: "Stage 3. World setup", body: "The renderer reads biome fog and sky data before drawing terrain. Plain distance fog is cheaper than layered volumetric setups.", lever: "Pack lever: fog definitions with no volumetric block." },
+  { title: "Stage 4. Particles and animation", body: "Emitters spawn and update particles, and flipbook textures step through frames. This is steady per second work across the whole scene.", lever: "Pack lever: zeroed particle definitions and single frame textures." },
+  { title: "Stage 5. HUD composition", body: "Hotbar, hearts, overlays and menus are composited last. Fewer full screen overlays means less overdraw on top of the world.", lever: "Pack lever: UI definitions and compact GUI textures." }
+];
+
+/* Optimization page content. */
+const OPT_TABS = [
+  {
+    id: "supported", label: "Pack mechanisms", icon: "check",
+    intro: "These are the levers the Bedrock resource pack format actually exposes. Everything Flow does is built from this list.",
+    rows: [
+      ["Fog definitions", "Per biome fog JSON files control distance fog. Shipping files without a volumetric block removes that evaluation while chunks still fade in."],
+      ["Particle definitions", "Emitter files decide spawn rate and lifetime. Setting a rate to zero stops the work instead of hiding the result."],
+      ["Flipbook textures", "Animated surfaces read frame strips. A single frame texture ends the per tick frame stepping for that surface."],
+      ["Sound definitions", "The sound definition file can silence or quiet loops, so the client stops streaming them."],
+      ["UI definitions", "HUD and menu JSON can drop overlays such as the vignette and swap in lighter interface textures."],
+      ["Texture replacement", "Shipping the same texture path at a lower resolution reduces memory and sampling cost."],
+      ["Colormaps", "Grass and foliage tint maps can ship smaller with no visible change in most biomes."],
+      ["Renderer configuration", "Current Bedrock builds read the pack renderer folder. Flow uses the settings exposed there to choose cheaper rendering paths for effects such as post-processing, shadows and water."],
+      ["Subpacks", "The manifest can offer resolution tiers, so players pick the texture size their device handles."]
+    ]
+  },
+  {
+    id: "scripting", label: "Needs scripting", icon: "bolt",
+    intro: "The items below change game behaviour. They need a behavior pack with the Script API, which is a different download and a different trust decision. Flow stays resource pack only.",
+    rows: [
+      ["Mob spawn control", "Changing spawn rules or despawn distances is behavior pack territory."],
+      ["Entity cleanup", "Removing dropped items or excess entities on a timer needs scripts or commands."],
+      ["Ticking area management", "Deciding which areas simulate is world and behavior configuration, not assets."],
+      ["Dynamic quality scaling", "Watching frame time and reacting to it needs code that runs every tick."]
+    ]
+  },
+  {
+    id: "limits", label: "Hard limits", icon: "warn",
+    intro: "No resource pack can do the following, whatever its description page claims. Settings like these live in the game engine.",
+    rows: [
+      ["Render distance", "Chunk view distance is a video setting. A pack cannot raise or lower it."],
+      ["Simulation distance", "How far the world ticks is engine configuration, not pack data."],
+      ["Frame rate caps", "FPS limits belong to the platform and the game video settings."],
+      ["Engine threading", "How the client splits work across CPU cores is not exposed to packs."],
+      ["Server performance", "A client side pack cannot fix server lag, TPS drops or network delay."]
+    ]
+  },
+  {
+    id: "myths", label: "Myths and facts", icon: "info",
+    intro: "Short answers to claims that circulate on download pages.",
+    rows: [
+      ["Myth: an invisible texture is free.", "Fact: a fully transparent texture still loads and gets read. Flow removes the emitter or the animation instead of only hiding pixels."],
+      ["Myth: deleting particles doubles FPS.", "Fact: gains depend on the scene. Rain and campfire smoke are heavy in some moments and irrelevant in others. Flow publishes no invented percentages."],
+      ["Myth: a pack can unlock higher render distance.", "Fact: it cannot. Anyone claiming that is describing a mod or an edited game, not a resource pack."],
+      ["Myth: lower resolution always looks worse everywhere.", "Fact: noisy surfaces like gravel and netherrack hide downsizing well. Faces, text and icons are left readable on purpose."],
+      ["Myth: renderer configuration raises render distance.", "Fact: it tunes how frames are drawn, not how many chunks the game loads. Chunk view distance stays a video setting."],
+      ["Myth: all optimization packs work the same way.", "Fact: some only blank textures. The mechanism matters, which is why every Flow change names its own."]
+    ]
+  }
+];
+
+const ABOUT_SECTIONS = [
+  { icon: "leaf", title: "What Flow is", body: "Flow is a resource pack for Minecraft Bedrock Edition. It reduces client side asset work: fewer particles, frozen flipbook animations, plain fog, quieter ambient audio and a lighter interface. It contains no behavior pack, no scripts and no gameplay changes. Worlds, Realms and servers behave exactly as before, because a resource pack can only change presentation." },
+  { icon: "box", title: "How it is built", body: "Every change is a standard pack file: renderer configuration, fog definitions, particle definitions, flipbook texture edits, sound definitions, UI definitions and downsized textures. If a technique is not on that list, Flow does not claim it. Each of the shipped changes in the feature matrix names the mechanism that performs it." },
+  { icon: "check", title: "Compatibility", body: "Flow targets Minecraft Bedrock Edition 1.21.0 and newer across Windows, consoles and mobile. Because it only replaces presentation assets, it stacks with most other packs. Load order decides which pack wins where two packs replace the same file, so place Flow above packs whose textures you prefer to keep." },
+  { icon: "info", title: "Credits and licence", body: "Interface font: Monocraft by Idrees Hassan, used under the SIL Open Font Licence 1.1. Pack files are released under the terms in the licence file included with the download." }
+];
+
+const SITE_CONFIG = {
+  settingsKey: "flow.site.settings.v1",
+  pages: [
+    { id: "home", label: "Home", icon: "home" },
+    { id: "features", label: "Features", icon: "grid" },
+    { id: "optimization", label: "Optimization", icon: "bolt" },
+    { id: "downloads", label: "Downloads", icon: "download" },
+    { id: "changelog", label: "Changelog", icon: "scroll" },
+    { id: "about", label: "About", icon: "info" },
+    { id: "settings", label: "Settings", icon: "gear" }
+  ],
+  defaults: { animation: "full", scene: true, confirmDownloads: "experimental" }
+};
+
+/* ==========================================================================
+   3. ICONS. Inline SVG paths, currentColor, square caps for the pixel look.
+   ========================================================================== */
+const ICONS = {
+  home: '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/>',
+  grid: '<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>',
+  bolt: '<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>',
+  download: '<path d="M12 3v10m0 0l-4-4m4 4l4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>',
+  scroll: '<path d="M7 4h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H7M7 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2M7 4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2M12 8h4M12 12h4"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/>',
+  check: '<path d="M4 12.5l5 5L20 6.5"/>',
+  chevron: '<path d="M9 5l7 7-7 7"/>',
+  warn: '<path d="M12 3L2 20h20zM12 10v5M12 18h.01"/>',
+  error: '<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+  close: '<path d="M5 5l14 14M19 5L5 19"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  reset: '<path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/>',
+  copy: '<rect x="9" y="9" width="11" height="11"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/>',
+  external: '<path d="M14 4h6v6M20 4L11 13M9 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/>',
+  spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/>',
+  film: '<rect x="3" y="4" width="18" height="16"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+  fog: '<path d="M4 10h13M2 14h16M6 18h14M14 6h8"/>',
+  sound: '<path d="M4 10v4h3l5 4V6l-5 4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+  hud: '<rect x="3" y="5" width="18" height="14"/><path d="M7 15h6M7 11h10"/>',
+  box: '<path d="M12 3l8 4v10l-8 4-8-4V7zM4 7l8 4 8-4M12 11v10"/>',
+  leaf: '<path d="M5 19C5 9 13 4 20 4c0 8-4 15-13 15M5 19c2-5 6-9 10-11"/>',
+  drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>'
+};
+function icon(name, cls) {
+  return '<svg class="' + (cls || "") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" focusable="false">' + (ICONS[name] || ICONS.info) + "</svg>";
+}
+function hydrateIcons(root) {
+  (root || document).querySelectorAll("[data-icon]").forEach(function (n) {
+    if (!n.querySelector("svg")) n.insertAdjacentHTML("afterbegin", icon(n.getAttribute("data-icon")));
+  });
+}
+
+/* ==========================================================================
+   4. UTILITIES AND STORAGE
+   ========================================================================== */
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+const store = {
+  get: function (k, fb) { try { const v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } },
+  set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
+  del: function (k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+};
+const TOTAL_CHANGES = FEATURE_CATEGORIES.reduce(function (n, c) { return n + c.items.length; }, 0);
+
+/* ==========================================================================
+   5. SETTINGS. Stored locally, applied to the document root.
+   ========================================================================== */
+let settings = Object.assign({}, SITE_CONFIG.defaults, store.get(SITE_CONFIG.settingsKey, {}));
+delete settings.sound;   /* retired preference: interface sounds were removed entirely */
+delete settings.theme;   /* retired preference: Graphite is now the only hardcoded theme */
+function saveSettings() { store.set(SITE_CONFIG.settingsKey, settings); }
+function applySettings() {
+  const root = document.documentElement;
+  root.setAttribute("data-scene", settings.scene ? "on" : "off");
+  let anim = settings.animation;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches && anim === "full") anim = "reduced";
+  root.setAttribute("data-anim", anim);
+}
+
+/* ==========================================================================
+   6. TOASTS
+   ========================================================================== */
+function toast(msg, iconName) {
+  const rootEl = $("#toast-root"); if (!rootEl) return;
+  while (rootEl.children.length >= 3) rootEl.removeChild(rootEl.firstChild);
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = icon(iconName || "check") + '<span class="t-msg">' + esc(msg) + '</span><button class="t-close" type="button" aria-label="Dismiss notification">' + icon("close") + "</button>";
+  t.querySelector(".t-close").addEventListener("click", function () { dismiss(); });
+  rootEl.appendChild(t);
+  let gone = false;
+  function dismiss() { if (gone) return; gone = true; t.classList.add("out"); setTimeout(function () { t.remove(); }, 240); }
+  setTimeout(dismiss, 4200);
+}
+
+/* ==========================================================================
+   7. DIALOG. One reusable modal with a small queue and focus management.
+   ========================================================================== */
+const Dialog = (function () {
+  const rootEl = function () { return $("#dialog-root"); };
+  let queue = [], open = false, lastFocus = null;
+  function show(cfg) {
+    return new Promise(function (resolve) { queue.push({ cfg: cfg, resolve: resolve }); pump(); });
+  }
+  function pump() {
+    if (open || !queue.length) return;
+    open = true;
+    const item = queue.shift(), cfg = item.cfg;
+    const r = rootEl();
+    lastFocus = document.activeElement;
+    $("#dlg-ico").innerHTML = icon(cfg.icon || (cfg.type === "error" ? "error" : "warn"));
+    $("#dlg-ico").setAttribute("data-icon", cfg.icon || "warn");
+    $("#dlg-title").textContent = cfg.title || "Notice";
+    $("#dlg-body").innerHTML = cfg.body || "";
+    const actions = $("#dlg-actions"); actions.innerHTML = "";
+    function finish(val) {
+      document.removeEventListener("keydown", onKey, true);
+      r.classList.remove("open"); r.setAttribute("aria-hidden", "true");
+      open = false;
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+      item.resolve(val); pump();
+    }
+    if (cfg.type === "confirm") {
+      const cancel = document.createElement("button");
+      cancel.className = "btn btn--ghost px"; cancel.type = "button"; cancel.textContent = cfg.cancelLabel || "Cancel";
+      cancel.addEventListener("click", function () { finish(false); });
+      const ok = document.createElement("button");
+      ok.className = "btn px " + (cfg.danger ? "btn--danger" : "btn--primary"); ok.type = "button"; ok.textContent = cfg.okLabel || "Confirm";
+      ok.addEventListener("click", function () { finish(true); });
+      actions.appendChild(cancel); actions.appendChild(ok);
+    } else {
+      const ok = document.createElement("button");
+      ok.className = "btn px " + (cfg.type === "error" ? "btn--danger" : "btn--primary"); ok.type = "button"; ok.textContent = cfg.okLabel || "OK";
+      ok.addEventListener("click", function () { finish(true); });
+      actions.appendChild(ok);
+    }
+    function onKey(e) {
+      if (e.key === "Escape") { e.preventDefault(); finish(cfg.type === "confirm" ? false : true); }
+      if (e.key === "Tab") {
+        const btns = $$("#dlg-actions button");
+        if (!btns.length) return;
+        const first = btns[0], last = btns[btns.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    }
+    document.addEventListener("keydown", onKey, true);
+    r.classList.add("open"); r.setAttribute("aria-hidden", "false");
+    const firstBtn = $("#dlg-actions button");
+    if (firstBtn) firstBtn.focus();
+  }
+  return {
+    confirm: function (cfg) { return show(Object.assign({}, cfg, { type: "confirm" })); },
+    alert: function (cfg) { return show(Object.assign({}, cfg, { type: "alert" })); },
+    error: function (cfg) { return show(Object.assign({}, cfg, { type: "error" })); }
+  };
+})();
+
+/* ==========================================================================
+   8. ROUTER AND NAVIGATION
+   ========================================================================== */
+let currentPage = null, navSeq = 0;
+function pageExists(id) { return !!document.querySelector('[data-page="' + id + '"]'); }
+function go(id) {
+  if (!pageExists(id)) id = "home";
+  if (location.hash === "#" + id) { render(id); return; }
+  location.hash = id;
+}
+function render(id) {
+  if (!pageExists(id)) id = "home";
+  const seq = ++navSeq;
+  $$(".page").forEach(function (p) {
+    const active = p.getAttribute("data-page") === id;
+    p.classList.toggle("is-active", active);
+    p.hidden = !active;
+    if (active) { p.classList.remove("is-enter"); void p.offsetWidth; p.classList.add("is-enter"); }
+  });
+  currentPage = id;
+  $$("#nav-desktop .nav-btn, #nav-mobile .nav-btn").forEach(function (b) {
+    if (b.getAttribute("data-page-link") === id) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
+  });
+  closeMenu();
+  window.scrollTo(0, 0);
+  const sec = document.querySelector('[data-page="' + id + '"]');
+  const h = sec ? sec.querySelector("h1, h2") : null;
+  if (h) { h.setAttribute("tabindex", "-1"); try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); } }
+}
+function buildNav() {
+  const mk = function (cls) {
+    return SITE_CONFIG.pages.map(function (p) {
+      return '<button type="button" class="nav-btn ' + cls + '" data-page-link="' + p.id + '">' + icon(p.icon) + "<span>" + esc(p.label) + "</span></button>";
+    }).join("");
+  };
+  $("#nav-desktop").innerHTML = mk("");
+  $("#nav-mobile").innerHTML = mk("");
+  $$("[data-page-link]").forEach(function (b) {
+    b.addEventListener("click", function () { go(b.getAttribute("data-page-link")); });
+  });
+}
+let menuOpen = false;
+function setMenu(openState) {
+  menuOpen = openState;
+  $("#nav-mobile").classList.toggle("open", openState);
+  const t = $("#menu-toggle");
+  t.setAttribute("aria-expanded", String(openState));
+  t.setAttribute("aria-label", openState ? "Close navigation menu" : "Open navigation menu");
+  t.innerHTML = icon(openState ? "close" : "menu");
+}
+function closeMenu() { if (menuOpen) setMenu(false); }
+
+/* ==========================================================================
+   9. TABS FACTORY. Buttons with arrow key support, one visible panel.
+   ========================================================================== */
+function createTabs(tabHost, panelHost, defs, renderPanel) {
+  let active = defs.length ? defs[0].id : null;
+  tabHost.innerHTML = defs.map(function (d) {
+    return '<button type="button" class="tab" role="tab" id="tab-' + tabHost.id + "-" + d.id + '" data-tab="' + d.id + '" aria-selected="' + (d.id === active) + '" aria-controls="panel-' + tabHost.id + "-" + d.id + '" tabindex="' + (d.id === active ? "0" : "-1") + '">' + icon(d.icon || "grid") + "<span>" + esc(d.label) + "</span></button>";
+  }).join("");
+  panelHost.innerHTML = defs.map(function (d) {
+    return '<div class="tabpanel" role="tabpanel" id="panel-' + tabHost.id + "-" + d.id + '" aria-labelledby="tab-' + tabHost.id + "-" + d.id + '"' + (d.id === active ? "" : " hidden") + ">" + renderPanel(d) + "</div>";
+  }).join("");
+  const tabs = $$(".tab", tabHost);
+  function select(id, focusTab) {
+    if (!defs.some(function (d) { return d.id === id; })) return;
+    active = id;
+    tabs.forEach(function (t) {
+      const on = t.getAttribute("data-tab") === id;
+      t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1;
+      if (on && focusTab) t.focus();
+    });
+    $$(".tabpanel", panelHost).forEach(function (p) { p.hidden = p.id !== "panel-" + tabHost.id + "-" + id; });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { select(t.getAttribute("data-tab"), false); });
+    t.addEventListener("keydown", function (e) {
+      let n = null;
+      if (e.key === "ArrowRight") n = (i + 1) % tabs.length;
+      else if (e.key === "ArrowLeft") n = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === "Home") n = 0;
+      else if (e.key === "End") n = tabs.length - 1;
+      if (n != null) { e.preventDefault(); select(tabs[n].getAttribute("data-tab"), true); }
+    });
+  });
+  return { select: select, get: function () { return active; } };
+}
+
+/* ==========================================================================
+   9B. CUSTOM FLOATING CHOICE CONTROL.
+   Every choice in the interface uses this pixel styled floating menu.
+   No native browser dropdown is used anywhere.
+   ========================================================================== */
+let openChoiceState = null;
+function choiceLabel(options, value) {
+  const found = options.filter(function (o) { return String(o.value) === String(value); })[0];
+  return found ? found.label : String(value);
+}
+function choiceHTML(id, options, value, ariaLabel) {
+  return '<div class="choice" data-choice="' + id + '" data-value="' + esc(value) + '">' +
+    '<button type="button" class="choice-btn" aria-haspopup="listbox" aria-expanded="false" aria-label="' + esc(ariaLabel || id) + '">' +
+    '<span class="choice-value">' + esc(choiceLabel(options, value)) + '</span>' + icon("chevron") + "</button></div>";
+}
+function closeChoice(returnFocus) {
+  if (!openChoiceState) return;
+  const st = openChoiceState; openChoiceState = null;
+  st.menu.remove();
+  st.trigger.setAttribute("aria-expanded", "false");
+  document.removeEventListener("mousedown", st.onDoc, true);
+  document.removeEventListener("keydown", st.onKey, true);
+  window.removeEventListener("resize", st.onMove);
+  window.removeEventListener("scroll", st.onMove, true);
+  if (returnFocus) st.trigger.focus();
+}
+function positionChoice(st) {
+  const r = st.trigger.getBoundingClientRect();
+  const menu = st.menu;
+  menu.style.width = Math.max(r.width, 180) + "px";
+  const mh = Math.min(menu.scrollHeight, 280);
+  let top = r.bottom + 6;
+  if (top + mh > window.innerHeight - 8) top = Math.max(8, r.top - mh - 6);
+  menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - menu.offsetWidth - 8)) + "px";
+  menu.style.top = top + "px";
+}
+function openChoice(choice) {
+  if (openChoiceState && openChoiceState.choice === choice) { closeChoice(false); return; }
+  closeChoice(false);
+  const trigger = choice.querySelector(".choice-btn");
+  const options = choice._options || [];
+  const menu = document.createElement("div");
+  menu.className = "choice-menu px";
+  menu.setAttribute("role", "listbox");
+  menu.setAttribute("aria-label", trigger.getAttribute("aria-label") || "Choices");
+  menu.innerHTML = options.map(function (o) {
+    const selected = String(o.value) === String(choice.getAttribute("data-value"));
+    return '<button type="button" class="choice-opt" role="option" data-value="' + esc(o.value) + '" aria-selected="' + selected + '"><span>' + esc(o.label) + '</span><span class="choice-check">' + icon("check") + "</span></button>";
+  }).join("");
+  document.body.appendChild(menu);
+  const st = { choice: choice, trigger: trigger, menu: menu };
+  st.onMove = function () { positionChoice(st); };
+  st.onDoc = function (e) { if (!menu.contains(e.target) && !choice.contains(e.target)) closeChoice(false); };
+  st.onKey = function (e) {
+    if (e.key === "Escape") { e.preventDefault(); closeChoice(true); return; }
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "Home" && e.key !== "End") return;
+    const opts = $$(".choice-opt", menu);
+    if (!opts.length) return;
+    e.preventDefault();
+    let i = opts.indexOf(document.activeElement);
+    if (e.key === "ArrowDown") i = i < 0 ? 0 : Math.min(opts.length - 1, i + 1);
+    else if (e.key === "ArrowUp") i = i < 0 ? opts.length - 1 : Math.max(0, i - 1);
+    else if (e.key === "Home") i = 0;
+    else i = opts.length - 1;
+    opts[i].focus();
+  };
+  openChoiceState = st;
+  trigger.setAttribute("aria-expanded", "true");
+  document.addEventListener("mousedown", st.onDoc, true);
+  document.addEventListener("keydown", st.onKey, true);
+  window.addEventListener("resize", st.onMove);
+  window.addEventListener("scroll", st.onMove, true);
+  positionChoice(st);
+  $$(".choice-opt", menu).forEach(function (opt) {
+    opt.addEventListener("click", function () {
+      const val = opt.getAttribute("data-value");
+      choice.setAttribute("data-value", val);
+      choice.querySelector(".choice-value").textContent = opt.querySelector("span").textContent;
+      const cb = choice._onChange;
+      closeChoice(true);
+      if (cb) cb(val);
+    });
+  });
+  const selected = menu.querySelector('[aria-selected="true"]') || menu.querySelector(".choice-opt");
+  if (selected) selected.focus();
+}
+function bindChoice(choice, options, onChange) {
+  if (!choice || choice._bound) return;
+  choice._bound = true; choice._options = options; choice._onChange = onChange;
+  const trigger = choice.querySelector(".choice-btn");
+  trigger.addEventListener("click", function () { openChoice(choice); });
+  trigger.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); openChoice(choice); }
+  });
+}
+
+/* ==========================================================================
+   10. FEATURE ROWS AND HOME MODULES
+   ========================================================================== */
+function featRow(item) {
+  return '<li class="feat-row"><span class="f-ico">' + icon("spark") + '</span><span class="f-name">' + esc(item[0]) + '<span class="mono-dim" style="display:block;font-size:.8rem">' + esc(item[2]) + '</span></span><span class="f-mech">' + esc(item[1]) + '</span><span class="badge badge--stable"><i></i>Added</span></li>';
+}
+let featureTabs = null;
+function renderFeatures() {
+  $("#feat-total").textContent = TOTAL_CHANGES + " shipped changes";
+  featureTabs = createTabs($("#feat-tabs"), $("#feat-panels"), FEATURE_CATEGORIES, function (cat) {
+    return '<div class="panel px" style="padding:20px"><p style="margin:0 0 14px;max-width:70ch">' + esc(cat.blurb) + '</p>' +
+      '<p style="margin:0 0 14px"><span class="count-chip">' + cat.items.length + " changes in this category</span></p>" +
+      '<ul class="feat-list">' + cat.items.map(featRow).join("") + "</ul></div>";
+  });
+}
+function renderHomeExplorer() {
+  $("#home-total-count").textContent = TOTAL_CHANGES;
+  createTabs($("#home-tabs"), $("#home-panels"), FEATURE_CATEGORIES, function (cat) {
+    return '<div class="panel px" style="padding:20px"><p style="margin:0 0 14px;max-width:70ch">' + esc(cat.blurb) + '</p>' +
+      '<ul class="feat-list">' + cat.items.slice(0, 5).map(featRow).join("") + "</ul>" +
+      '<div class="row" style="margin-top:16px"><button type="button" class="btn btn--sm px" data-view-cat="' + cat.id + '">' + icon("grid") + "<span>View all " + cat.items.length + " changes</span></button>" +
+      '<button type="button" class="btn btn--sm btn--ghost px" data-nav="optimization">' + icon("bolt") + "<span>How the mechanisms work</span></button></div></div>";
+  });
+  $$("[data-view-cat]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      go("features");
+      if (featureTabs) featureTabs.select(b.getAttribute("data-view-cat"), false);
+    });
+  });
+}
+/* Frame walk stepper */
+let stepIndex = 0;
+function renderStep() {
+  $("#step-progress").innerHTML = FRAME_STEPS.map(function (s, i) { return '<i class="' + (i <= stepIndex ? "on" : "") + '"></i>'; }).join("");
+  const s = FRAME_STEPS[stepIndex];
+  $("#step-body").innerHTML = "<h3>" + esc(s.title) + "</h3><p>" + esc(s.body) + '</p><p class="step-lever">' + esc(s.lever) + "</p>";
+  $("#step-count").textContent = "Step " + (stepIndex + 1) + " of " + FRAME_STEPS.length;
+  $("#step-prev").disabled = stepIndex === 0;
+  $("#step-next").innerHTML = icon("chevron") + "<span>" + (stepIndex === FRAME_STEPS.length - 1 ? "Restart" : "Next") + "</span>";
+}
+/* Compatibility checker */
+function renderCompat() {
+  const kv = [["Edition", PRODUCT_CONFIG.edition], ["Minimum game version", PRODUCT_CONFIG.minGameVersion], ["Pack type", PRODUCT_CONFIG.packType], ["Behavior pack", PRODUCT_CONFIG.behaviorPack]];
+  $("#compat-kv").innerHTML = kv.map(function (r) { return "<dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("");
+  const chips = PRODUCT_CONFIG.platforms.map(function (p) { return '<span class="badge">' + esc(p) + "</span>"; }).join("");
+  $("#home-compat-chips").innerHTML = chips;
+  $("#home-compat-chips-2").innerHTML = chips;
+  $("#compat-note").textContent = "The pack manifest accepts Minecraft " + PRODUCT_CONFIG.minGameVersion + " and newer. Pick your game version to check it against that minimum. The check runs locally and only reads the value you select.";
+  const options = COMPAT_OPTIONS.map(function (o) { return { value: o.v, label: o.v }; });
+  const host = $("#compat-choice");
+  host.innerHTML = choiceHTML("compat-version", options, COMPAT_OPTIONS[0].v, "Your Minecraft version");
+  const result = $("#compat-result");
+  result.textContent = "Choose your game version above.";
+  result.classList.remove("ok");
+  bindChoice(host.querySelector("[data-choice]"), options, function (val) {
+    const opt = COMPAT_OPTIONS.filter(function (o) { return o.v === val; })[0];
+    const ok = !!(opt && opt.ok);
+    result.classList.toggle("ok", ok);
+    result.textContent = ok
+      ? "Minecraft " + val + " works with Flow. It meets the " + PRODUCT_CONFIG.minGameVersion + " minimum in the pack manifest."
+      : "Minecraft " + val + " is below the pack minimum of " + PRODUCT_CONFIG.minGameVersion + ". Update the game, then apply the pack again.";
+  });
+}
+function renderHomeFacts() {
+  const latest = latestStable();
+  const kv = [["Edition", PRODUCT_CONFIG.edition], ["Pack type", PRODUCT_CONFIG.packType], ["Behavior pack", PRODUCT_CONFIG.behaviorPack], ["Scripts", PRODUCT_CONFIG.scripting], ["Shipped changes", TOTAL_CHANGES + " across " + FEATURE_CATEGORIES.length + " categories"], ["Current release", latest ? "v" + latest.version : "See Downloads"]];
+  $("#home-kv").innerHTML = kv.map(function (r) { return "<dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]) + "</dd>"; }).join("");
+  $$("[data-cfg]").forEach(function (n) {
+    const k = n.getAttribute("data-cfg");
+    if (PRODUCT_CONFIG[k]) n.textContent = PRODUCT_CONFIG[k];
+  });
+}
+
+/* ==========================================================================
+   11. OPTIMIZATION PAGE
+   ========================================================================== */
+function renderOptimization() {
+  createTabs($("#opt-tabs"), $("#opt-panels"), OPT_TABS, function (tab) {
+    const rows = tab.rows.map(function (r) {
+      if (tab.id === "myths") return '<div class="myth"><p style="margin:0"><b>' + esc(r[0]) + "</b></p><p style='margin:6px 0 0'>" + esc(r[1]) + "</p></div>";
+      return '<div class="tech panel px"><span class="t-ico">' + icon(tab.icon) + '</span><div><h4>' + esc(r[0]) + "</h4><p>" + esc(r[1]) + "</p></div></div>";
+    }).join("");
+    return '<p class="mono-dim" style="max-width:70ch;margin:0 0 16px">' + esc(tab.intro) + '</p><div class="stack">' + rows + "</div>";
+  });
+}
+
+/* ==========================================================================
+   12. DOWNLOADS
+   ========================================================================== */
+function latestStable() {
+  const st = PRODUCT_CONFIG.releases.filter(function (r) { return r.channel === "stable"; });
+  return st.length ? st.slice().sort(function (a, b) { return b.date.localeCompare(a.date); })[0] : (PRODUCT_CONFIG.releases[0] || null);
+}
+function urlState(r) {
+  const u = (r.downloadUrl || "").trim();
+  if (!/^https:\/\//i.test(u) || u.indexOf("REPLACE_WITH") === 0) return { ok: false, url: u };
+  try { const p = new URL(u); return { ok: true, url: u, host: p.hostname }; } catch (e) { return { ok: false, url: u }; }
+}
+function channelBadge(ch) {
+  if (ch === "stable") return '<span class="badge badge--stable"><i></i>Stable</span>';
+  if (ch === "beta") return '<span class="badge badge--beta"><i></i>Beta</span>';
+  return '<span class="badge badge--beta"><i></i>Experimental</span>';
+}
+function releaseCard(r, isLatest) {
+  const st = urlState(r);
+  const notes = (r.notes || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("");
+  return '<article class="release panel px' + (isLatest ? " is-latest" : "") + '">' +
+    '<div class="release-head"><span class="release-ver">Flow v' + esc(r.version) + "</span>" + channelBadge(r.channel) + (isLatest ? '<span class="badge badge--stable"><i></i>Latest</span>' : "") + "</div>" +
+    '<div class="release-meta"><span>' + icon("scroll") + esc(r.date) + "</span><span>" + icon("check") + "Minecraft " + esc(r.mc) + "</span><span>" + icon("box") + esc(r.fileName) + "</span></div>" +
+    '<button type="button" class="exp-head" data-exp aria-expanded="false"><span>Release notes</span>' + icon("chevron") + "</button>" +
+    '<div class="expander"><div><ul style="margin:0;padding-left:18px">' + notes + "</ul></div></div>" +
+    '<div class="release-actions"><button type="button" class="btn btn--primary px" data-dl="' + esc(r.version) + '">' + icon("download") + "<span>Download</span></button>" +
+    (st.ok ? '<button type="button" class="btn btn--ghost px" data-copy="' + esc(r.version) + '">' + icon("copy") + "<span>Copy link</span></button>" : "") +
+    '<span class="release-status" data-status="' + esc(r.version) + '" role="status"></span></div></article>';
+}
+function findRelease(v) { return PRODUCT_CONFIG.releases.filter(function (r) { return r.version === v; })[0]; }
+function setStatus(v, msg, kind) {
+  const n = document.querySelector('[data-status="' + v + '"]');
+  if (n) { n.textContent = msg; n.className = "release-status" + (kind ? " " + kind : ""); }
+}
+async function handleDownload(r) {
+  const st = urlState(r);
+  if (!st.ok) {
+    setStatus(r.version, "No download address is configured for v" + r.version + ".", "err");
+    await Dialog.error({
+      title: "Download address not configured", icon: "error",
+      body: "<p>Release v" + esc(r.version) + " has no download address yet, so nothing was opened and nothing was downloaded.</p><p>To publish this release, open the PRODUCT_CONFIG object at the top of the script in index.html and set downloadUrl for v" + esc(r.version) + " to the file host link, then reload this page.</p>"
+    });
+    return;
+  }
+  const policy = settings.confirmDownloads;
+  const needsConfirm = policy === "always" || (policy === "experimental" && r.channel !== "stable");
+  if (needsConfirm) {
+    const yes = await Dialog.confirm({
+      title: "Open external download", icon: "external", okLabel: "Open download",
+      body: "<p>This opens <b>" + esc(st.host) + "</b> in a new tab to fetch " + esc(r.fileName) + ".</p><p>The file comes from that host, not from this page. This site never downloads files by itself.</p>"
+    });
+    if (!yes) { setStatus(r.version, "Download cancelled. Nothing was opened.", ""); toast("Download cancelled", "info"); return; }
+  }
+  setStatus(r.version, "Opening " + st.host + " in a new tab.", "");
+  const win = window.open(st.url, "_blank", "noopener");
+  if (!win) {
+    const a = document.createElement("a");
+    a.href = st.url; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  setStatus(r.version, "Opened " + st.host + " in a new tab. If nothing appeared, allow popups for this page and try again.", "ok");
+  toast("Download page opened: " + st.host, "external");;
+}
+function wireReleaseCards(scope) {
+  $$("[data-dl]", scope).forEach(function (b) {
+    b.addEventListener("click", function () { const r = findRelease(b.getAttribute("data-dl")); if (r) handleDownload(r); });
+  });
+  $$("[data-copy]", scope).forEach(function (b) {
+    b.addEventListener("click", async function () {
+      const r = findRelease(b.getAttribute("data-copy")); if (!r) return;
+      const st = urlState(r);
+      try { await navigator.clipboard.writeText(st.url); toast("Download link copied", "copy"); }
+      catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = st.url; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); toast("Download link copied", "copy"); }
+        catch (e2) { await Dialog.alert({ title: "Copy this link", icon: "copy", body: "<p>" + esc(st.url) + "</p>" }); }
+        ta.remove();
+      }
+    });
+  });
+  $$("[data-exp]", scope).forEach(function (h) {
+    h.addEventListener("click", function () {
+      const ex = h.nextElementSibling;
+      const openState = h.getAttribute("aria-expanded") === "true";
+      h.setAttribute("aria-expanded", String(!openState));
+      if (ex) ex.classList.toggle("open", !openState);
+    });
+  });
+}
+let dlState = { channel: "all", sort: "newest" };
+function renderDownloads() {
+  const latest = latestStable();
+  $("#dl-latest").innerHTML = latest ? '<p class="cl-group" style="margin-top:0">Latest stable release</p>' + releaseCard(latest, true) : "";
+  const channelOptions = [{ value: "all", label: "All channels" }, { value: "stable", label: "Stable" }, { value: "beta", label: "Beta" }, { value: "experimental", label: "Experimental" }];
+  const sortOptions = [{ value: "newest", label: "Newest first" }, { value: "oldest", label: "Oldest first" }];
+  $("#dl-filters").innerHTML =
+    '<div class="field"><span class="field-label">Channel</span>' + choiceHTML("dl-channel", channelOptions, dlState.channel, "Channel") + "</div>" +
+    '<div class="field"><span class="field-label">Sort</span>' + choiceHTML("dl-sort", sortOptions, dlState.sort, "Sort") + "</div>" +
+    '<span class="mono-dim" id="dl-count" style="font-size:.8rem"></span>';
+  bindChoice(document.querySelector('[data-choice="dl-channel"]'), channelOptions, function (val) { dlState.channel = val; renderDlList(); });
+  bindChoice(document.querySelector('[data-choice="dl-sort"]'), sortOptions, function (val) { dlState.sort = val; renderDlList(); });
+  renderDlList();
+  wireReleaseCards($("#dl-latest"));
+}
+function renderDlList() {
+  let list = PRODUCT_CONFIG.releases.slice();
+  if (dlState.channel !== "all") list = list.filter(function (r) { return r.channel === dlState.channel; });
+  list.sort(function (a, b) { return dlState.sort === "newest" ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date); });
+  const host = $("#dl-list");
+  if (!list.length) {
+    host.innerHTML = '<div class="empty panel px">' + icon("info") + "<p>No releases match this filter yet. Try another channel.</p></div>";
+  } else {
+    const latest = latestStable();
+    host.innerHTML = list.map(function (r) { return releaseCard(r, latest && r.version === latest.version); }).join("");
+  }
+  $("#dl-count").textContent = list.length + (list.length === 1 ? " release" : " releases");
+  wireReleaseCards(host);
+}
+
+/* ==========================================================================
+   13. CHANGELOG. Derived from the same release data as Downloads.
+   ========================================================================== */
+function renderChangelog() {
+  const list = PRODUCT_CONFIG.releases.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+  if (!list.length) { $("#cl-body").innerHTML = '<div class="empty panel px">' + icon("info") + "<p>No releases recorded yet.</p></div>"; return; }
+  let lastYear = "";
+  $("#cl-body").innerHTML = list.map(function (r) {
+    const year = r.date.slice(0, 4);
+    const head = year !== lastYear ? '<p class="cl-group">' + year + "</p>" : "";
+    lastYear = year;
+    const notes = (r.notes || []).map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("");
+    return head + '<div class="tl"><div class="tl-item' + (r.channel !== "stable" ? " exp" : "") + '"><div class="row" style="gap:10px"><span class="release-ver">v' + esc(r.version) + "</span>" + channelBadge(r.channel) + '<span class="mono-dim" style="font-size:.78rem">' + esc(r.date) + " • Minecraft " + esc(r.mc) + '</span></div><ul style="margin:8px 0 0;padding-left:18px">' + notes + "</ul></div></div>";
+  }).join("");
+}
+
+/* ==========================================================================
+   14. ABOUT
+   ========================================================================== */
+function renderAbout() {
+  $("#about-body").innerHTML = ABOUT_SECTIONS.map(function (s) {
+    return '<article class="card panel px"><span class="card-ico">' + icon(s.icon) + "</span><h3>" + esc(s.title) + "</h3><p style='margin:0'>" + esc(s.body) + "</p></article>";
+  }).join("") +
+  '<article class="card panel px"><span class="card-ico">' + icon("grid") + "</span><h3>At a glance</h3>" +
+  '<dl class="kv"><dt>Shipped changes</dt><dd>' + TOTAL_CHANGES + '</dd><dt>Categories</dt><dd>' + FEATURE_CATEGORIES.length + '</dd><dt>Pack type</dt><dd>' + esc(PRODUCT_CONFIG.packType) + '</dd><dt>Minimum game version</dt><dd>' + esc(PRODUCT_CONFIG.minGameVersion) + "</dd></dl></article>";
+}
+
+/* ==========================================================================
+   15. SETTINGS PAGE
+   ========================================================================== */
+function renderSettings() {
+  const body = $("#settings-body");
+  const row = function (title, desc, ctl) {
+    return '<div class="set-row"><div class="set-txt"><h3>' + title + "</h3><p>" + desc + '</p></div><div class="set-ctl">' + ctl + "</div></div>";
+  };
+  const sw = function (id, on, label) {
+    return '<button type="button" class="switch" id="' + id + '" role="switch" aria-checked="' + on + '" aria-label="' + label + '"></button>';
+  };
+  const animOptions = [{ value: "full", label: "Full" }, { value: "reduced", label: "Reduced" }, { value: "off", label: "Off" }];
+  const confirmOptions = [{ value: "experimental", label: "Experimental" }, { value: "always", label: "Always" }, { value: "never", label: "Never" }];
+  body.innerHTML =
+    row("Animation", "Controls page transitions and interface motion on this website. Reduced follows a calmer setting, Off removes motion entirely.", choiceHTML("set-anim", animOptions, settings.animation, "Animation")) +
+    row("Background scene", "Shows or hides the pixel art scene bands at the top and bottom of the page.", sw("set-scene", settings.scene, "Background scene")) +
+    row("Download confirmations", "Ask before opening a download host. Experimental asks for beta and experimental builds, Always asks for every release, Never opens right away.", choiceHTML("set-confirm", confirmOptions, settings.confirmDownloads, "Download confirmations"));
+  $("#settings-state").textContent = "Preferences save automatically to this browser.";
+  bindChoice(document.querySelector('[data-choice="set-anim"]'), animOptions, function (val) { settings.animation = val; saveSettings(); applySettings(); toast("Animation set to " + val, "gear"); });
+  bindChoice(document.querySelector('[data-choice="set-confirm"]'), confirmOptions, function (val) { settings.confirmDownloads = val; saveSettings(); toast("Download confirmations updated", "gear"); });
+  const bindSwitch = function (id, key, label) {
+    $(id).addEventListener("click", function () {
+      settings[key] = !settings[key]; saveSettings(); applySettings();
+      $(id).setAttribute("aria-checked", String(settings[key]));
+      toast(label + (settings[key] ? " on" : " off"), "gear");
+    });
+  };
+  bindSwitch("#set-scene", "scene", "Background scene");
+}
+
+/* ==========================================================================
+   16. GLOBAL WIRING AND BOOT
+   ========================================================================== */
+function init() {
+  document.documentElement.classList.remove("no-js");
+  applySettings();
+  buildNav();
+  renderHomeFacts();
+  renderHomeExplorer();
+  renderStep();
+  renderCompat();
+  renderFeatures();
+  renderOptimization();
+  renderDownloads();
+  renderChangelog();
+  renderAbout();
+  renderSettings();
+  hydrateIcons(document);
+
+  $("#menu-toggle").innerHTML = icon("menu");
+  $("#menu-toggle").addEventListener("click", function () { setMenu(!menuOpen); });
+  document.addEventListener("click", function (e) {
+    /* composedPath survives the toggle button swapping its own icon mid-click,
+       which detaches the clicked SVG node before this handler runs. */
+    const path = e.composedPath ? e.composedPath() : [];
+    const inChrome = path.some(function (n) { return n && (n.id === "nav-mobile" || n.id === "menu-toggle"); }) ||
+      (e.target.closest && (e.target.closest("#nav-mobile") || e.target.closest("#menu-toggle")));
+    if (menuOpen && !inChrome) closeMenu();
+    const navBtn = e.target.closest("[data-nav]");
+    if (navBtn) { go(navBtn.getAttribute("data-nav")); return; }
+    const sc = e.target.closest("[data-scroll]");
+    if (sc) { const t = document.getElementById(sc.getAttribute("data-scroll")); if (t) t.scrollIntoView({ behavior: settings.animation === "off" ? "auto" : "smooth", block: "start" }); }
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
+  window.addEventListener("hashchange", function () { render((location.hash || "#home").slice(1)); });
+
+  $("#step-prev").addEventListener("click", function () { if (stepIndex > 0) { stepIndex--; renderStep(); } });
+  $("#step-next").addEventListener("click", function () { stepIndex = stepIndex >= FRAME_STEPS.length - 1 ? 0 : stepIndex + 1; renderStep(); });
+
+  $("#settings-reset").addEventListener("click", async function () {
+    const yes = await Dialog.confirm({
+      title: "Reset website settings", icon: "reset", danger: true, okLabel: "Reset settings",
+      body: "<p>This restores the website preferences on this page to their defaults. It changes nothing in Minecraft and nothing in the pack configuration.</p>"
+    });
+    if (!yes) return;
+    settings = Object.assign({}, SITE_CONFIG.defaults);
+    store.del(SITE_CONFIG.settingsKey); saveSettings(); applySettings(); renderSettings(); hydrateIcons(document);
+    toast("Settings reset to defaults", "reset");
+  });
+
+  render((location.hash || "#home").slice(1) || "home");
+  setTimeout(function () {
+    const b = $("#boot");
+    if (b) b.classList.add("done");
+    document.body.classList.add("ready");
+  }, 500);
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+</script>
+
+</body>
+</html>
